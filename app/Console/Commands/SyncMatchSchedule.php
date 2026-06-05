@@ -41,6 +41,7 @@ class SyncMatchSchedule extends Command
         'SAU' => 'KSA', // Arábia Saudita
         'DZA' => 'ALG', // Argélia
         'CIV' => 'CIV', // Costa do Marfim (igual)
+        'URY' => 'URU', // Uruguai
     ];
 
     public function handle(): int
