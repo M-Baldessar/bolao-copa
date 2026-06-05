@@ -1,0 +1,9 @@
+User-agent: *
+
+# Bloquear áreas autenticadas e admin
+Disallow: /dashboard
+Disallow: /grupos
+Disallow: /partidas
+Disallow: /meus-palpites
+Disallow: /bolao
+Disallow: /admin

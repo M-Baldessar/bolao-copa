@@ -1,0 +1,147 @@
+@import 'tailwindcss';
+
+/* Dark mode: ativado pela classe .dark no <html> (toggle manual ou preferência do sistema) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+/* Display font utility */
+.font-display {
+    font-family: 'Barlow Condensed', ui-sans-serif, system-ui, sans-serif;
+    letter-spacing: 0.02em;
+}
+
+/* ============================================================
+   TRANSIÇÃO SUAVE DE TEMA
+   Aplicada apenas quando o toggle é acionado (via JS),
+   evitando flash no carregamento inicial.
+   ============================================================ */
+.theme-transitioning,
+.theme-transitioning *,
+.theme-transitioning *::before,
+.theme-transitioning *::after {
+    transition:
+        background-color 0.25s ease,
+        border-color 0.25s ease,
+        color 0.25s ease,
+        box-shadow 0.25s ease !important;
+}
+
+/* ============================================================
+   SCROLLBAR — adapta ao tema
+   ============================================================ */
+:root {
+    color-scheme: light dark;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent; /* slate-300 no light */
+}
+
+.dark {
+    color-scheme: dark;
+    scrollbar-color: #1e293b transparent; /* slate-800 no dark */
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+.dark ::-webkit-scrollbar-thumb { background: #1e293b; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+.dark ::-webkit-scrollbar-thumb:hover { background: #334155; }
+
+/* ============================================================
+   NOISE TEXTURE (cards dark)
+   ============================================================ */
+.bg-noise { position: relative; }
+.bg-noise::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 200px 200px;
+    border-radius: inherit;
+    z-index: 0;
+}
+
+/* ============================================================
+   GLOW EFFECTS
+   ============================================================ */
+.glow-emerald { box-shadow: 0 0 20px -5px rgba(16, 185, 129, 0.3); }
+.glow-amber   { box-shadow: 0 0 20px -5px rgba(245, 158, 11, 0.25); }
+
+/* ============================================================
+   ANIMAÇÕES DE ENTRADA (stagger)
+   ============================================================ */
+@keyframes slide-up-fade {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in { animation: slide-up-fade 0.35s ease-out both; }
+.stagger-1  { animation-delay: 0.05s; }
+.stagger-2  { animation-delay: 0.10s; }
+.stagger-3  { animation-delay: 0.15s; }
+.stagger-4  { animation-delay: 0.20s; }
+.stagger-5  { animation-delay: 0.25s; }
+
+/* ============================================================
+   INPUTS NUMÉRICOS — sem setas
+   ============================================================ */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"] { -moz-appearance: textfield; }
+
+/* ============================================================
+   PROFILE DROPDOWN
+   ============================================================ */
+@keyframes dropdown-appear {
+    from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.dropdown-enter {
+    animation: dropdown-appear 180ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Estado selecionado no grid de emojis de time */
+.team-emoji-selected {
+    background-color: #f0fdf4; /* emerald-50 */
+    box-shadow: 0 0 0 2px #34d399; /* ring-emerald-400 */
+}
+
+:where(.dark, .dark *) .team-emoji-selected {
+    background-color: rgba(16, 185, 129, 0.1);
+    box-shadow: 0 0 0 2px #34d399;
+}
+
+/* Focus ring para inputs numéricos */
+input[type="number"]:focus-visible {
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+}
+
+/* ============================================================
+   ACESSIBILIDADE — outline visível em navegação por teclado
+   Garante que focus-visible seja sempre visível independente
+   do tema.
+   ============================================================ */
+:focus-visible {
+    outline: 2px solid #10b981; /* emerald-500 */
+    outline-offset: 2px;
+}
+
+/* Botões e links que já têm ring explícito: não duplicar */
+[class*="focus-visible:ring"]:focus-visible {
+    outline: none;
+}
