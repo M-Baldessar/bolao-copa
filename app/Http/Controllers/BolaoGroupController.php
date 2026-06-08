@@ -61,25 +61,7 @@ class BolaoGroupController extends Controller
 
         $bolaoGroup->load(['members', 'owner']);
 
-        // Ranking: membros ordenados pela pontuação dentro deste bolão
-        $members = $bolaoGroup->members->map(function ($member) use ($bolaoGroup) {
-            $predictions = $member->predictions()
-                ->where('bolao_group_id', $bolaoGroup->id)
-                ->with('match')
-                ->get();
-            $points = $predictions->sum(fn($p) => $p->points());
-
-            $championPick = ChampionPick::where('user_id', $member->id)
-                ->where('bolao_group_id', $bolaoGroup->id)
-                ->with(['team', 'runnerUp'])
-                ->first();
-            if ($championPick) {
-                $points += $championPick->points();
-                $points += $championPick->runnerUpPoints();
-            }
-
-            return ['user' => $member, 'points' => $points, 'championPick' => $championPick];
-        })->sortByDesc('points')->values();
+        $members = $bolaoGroup->buildRanking();
 
         return view('bolao_groups.show', compact('bolaoGroup', 'members'));
     }

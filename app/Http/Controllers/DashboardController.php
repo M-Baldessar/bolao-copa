@@ -22,7 +22,20 @@ class DashboardController extends Controller
         $myGroups = BolaoGroup::where('owner_id', $user->id)
             ->orWhereHas('members', fn($q) => $q->where('user_id', $user->id))
             ->withCount('members')
+            ->with('members')
             ->get();
+
+        // Ranking de cada bolão com posição do usuário logado
+        $groupRankings = $myGroups->map(function ($group) use ($user) {
+            $ranking  = $group->buildRanking();
+            $myIndex  = $ranking->search(fn($m) => $m['user']->id === $user->id);
+            return [
+                'group'       => $group,
+                'ranking'     => $ranking,
+                'my_position' => $myIndex !== false ? $myIndex + 1 : null,
+                'my_points'   => $myIndex !== false ? $ranking[$myIndex]['points'] : 0,
+            ];
+        });
 
         // Escolhas de campeão do usuário, indexadas por bolao_group_id
         $championPicks = ChampionPick::where('user_id', $user->id)
@@ -42,6 +55,7 @@ class DashboardController extends Controller
             'predictedCount',
             'remainingCount',
             'myGroups',
+            'groupRankings',
             'championPicks',
             'teams',
             'champLocked',

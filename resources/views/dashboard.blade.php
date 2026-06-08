@@ -22,84 +22,142 @@
         </div>
     </div>
 
-    {{-- Cards de estatísticas --}}
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8" role="list" aria-label="Estatísticas dos palpites">
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 text-center animate-in stagger-1 hover:border-slate-300 dark:hover:border-slate-700 transition-colors"
-             role="listitem">
-            <div class="font-display font-bold text-5xl text-slate-800 dark:text-slate-100 mb-1" aria-label="{{ $totalMatches }} partidas no total">{{ $totalMatches }}</div>
+    {{-- Topo simplificado: Total de partidas + Progresso + Ver Grupos --}}
+    @php $progress = $totalMatches > 0 ? round(($predictedCount / $totalMatches) * 100) : 0; @endphp
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 animate-in stagger-1">
+
+        {{-- Total de Partidas --}}
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 text-center">
+            <div class="font-display font-bold text-5xl text-slate-800 dark:text-slate-100 mb-1">{{ $totalMatches }}</div>
             <div class="text-slate-600 dark:text-slate-400 text-xs font-semibold uppercase tracking-widest mt-1">Total de Partidas</div>
             <div class="text-slate-400 dark:text-slate-600 text-xs mt-1">Fase de Grupos</div>
         </div>
 
-        <div class="bg-white dark:bg-slate-900 border border-emerald-500/20 rounded-xl p-6 text-center animate-in stagger-2 hover:border-emerald-500/30 transition-colors"
-             role="listitem">
-            <div class="font-display font-bold text-5xl text-emerald-600 dark:text-emerald-400 mb-1" aria-label="{{ $predictedCount }} palpites enviados">{{ $predictedCount }}</div>
-            <div class="text-slate-600 dark:text-slate-400 text-xs font-semibold uppercase tracking-widest mt-1">Seus Palpites</div>
-            <div class="text-slate-400 dark:text-slate-600 text-xs mt-1">Enviados até agora</div>
-        </div>
-
-        <div class="bg-white dark:bg-slate-900 border {{ $remainingCount > 0 ? 'border-amber-500/20' : 'border-emerald-500/20' }} rounded-xl p-6 text-center animate-in stagger-3 transition-colors {{ $remainingCount > 0 ? 'hover:border-amber-500/30' : 'hover:border-emerald-500/30' }}"
-             role="listitem">
-            <div class="font-display font-bold text-5xl {{ $remainingCount > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400' }} mb-1"
-                 aria-label="{{ $remainingCount }} partidas {{ $remainingCount > 0 ? 'sem palpite' : 'tudo preenchido' }}">
-                {{ $remainingCount }}
-            </div>
-            <div class="text-slate-600 dark:text-slate-400 text-xs font-semibold uppercase tracking-widest mt-1">Faltando</div>
-            <div class="text-slate-400 dark:text-slate-600 text-xs mt-1">
-                {{ $remainingCount > 0 ? 'Partidas sem palpite' : 'Tudo preenchido!' }}
-            </div>
-        </div>
-    </div>
-
-    {{-- Barra de progresso --}}
-    @if($totalMatches > 0)
-        @php $progress = $totalMatches > 0 ? round(($predictedCount / $totalMatches) * 100) : 0; @endphp
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 mb-8 animate-in stagger-2">
+        {{-- Progresso dos palpites --}}
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 flex flex-col justify-center">
             <div class="flex items-center justify-between mb-3">
                 <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Progresso dos palpites</span>
                 <span class="text-sm font-bold {{ $progress === 100 ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400' }}">{{ $progress }}%</span>
             </div>
             <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2" role="progressbar" aria-valuenow="{{ $progress }}" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso: {{ $progress }}%">
-                <div class="h-2 rounded-full transition-all duration-700 {{ $progress === 100 ? 'bg-emerald-500' : 'bg-amber-500' }}"
-                     style="width: {{ $progress }}%">
-                </div>
+                <div class="h-2 rounded-full transition-all duration-700 {{ $progress === 100 ? 'bg-emerald-500' : 'bg-amber-500' }}" style="width: {{ $progress }}%"></div>
             </div>
-            @if($progress < 100 && $remainingCount > 0)
-                <p class="text-xs text-slate-500 dark:text-slate-600 mt-2">{{ $remainingCount }} partida(s) aguardando seu palpite</p>
-            @elseif($progress === 100)
-                <p class="text-xs text-emerald-600 dark:text-emerald-600 mt-2">Todos os palpites preenchidos!</p>
-            @endif
+            <p class="text-xs mt-2 {{ $progress === 100 ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-600' }}">
+                {{ $progress === 100 ? 'Todos os palpites preenchidos!' : $remainingCount . ' partida(s) aguardando seu palpite' }}
+            </p>
         </div>
-    @endif
 
-    {{-- Ações rápidas --}}
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        {{-- Ver Grupos --}}
         <a href="{{ route('groups.index') }}"
-           class="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500/30 rounded-xl p-6 text-center transition-all animate-in stagger-1">
-            <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-3 group-hover:bg-emerald-500/15 transition-colors" aria-hidden="true">
+           class="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500/30 rounded-xl p-6 text-center transition-all flex flex-col items-center justify-center gap-3">
+            <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center group-hover:bg-emerald-500/15 transition-colors" aria-hidden="true">
                 <span class="text-2xl leading-none">🏆</span>
             </div>
-            <div class="font-semibold text-slate-700 dark:text-slate-200 text-sm group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Ver Grupos</div>
-            <div class="text-xs text-slate-500 mt-0.5">12 grupos · 48 seleções</div>
+            <div>
+                <div class="font-semibold text-slate-700 dark:text-slate-200 text-sm group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">Ver Grupos</div>
+                <div class="text-xs text-slate-500 mt-0.5">12 grupos · 48 seleções</div>
+            </div>
         </a>
 
-        <a href="{{ route('matches.index') }}"
-           class="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500/30 rounded-xl p-6 text-center transition-all animate-in stagger-2">
-            <div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mx-auto mb-3 group-hover:bg-blue-500/15 transition-colors" aria-hidden="true">
-                <span class="text-2xl leading-none">⚽</span>
-            </div>
-            <div class="font-semibold text-slate-700 dark:text-slate-200 text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Partidas</div>
-            <div class="text-xs text-slate-500 mt-0.5">{{ $remainingCount }} restantes</div>
-        </a>
+    </div>
 
-        <a href="{{ route('predictions.index') }}"
-           class="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500/30 rounded-xl p-6 text-center transition-all animate-in stagger-3">
-            <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mx-auto mb-3 group-hover:bg-purple-500/15 transition-colors" aria-hidden="true">
-                <span class="text-2xl leading-none">📋</span>
+    {{-- Ranking dos Bolões --}}
+    <div class="mb-8 animate-in stagger-2">
+        <h2 class="font-display font-bold text-lg text-slate-800 dark:text-slate-100 mb-4">Meus Bolões</h2>
+
+        @if($groupRankings->isEmpty())
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-8 text-center">
+                <p class="text-slate-500 dark:text-slate-400 text-sm mb-3">Você ainda não entrou em nenhum bolão.</p>
+                <a href="{{ route('bolao.join') }}" class="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">
+                    🔍 Entrar em um bolão
+                </a>
             </div>
-            <div class="font-semibold text-slate-700 dark:text-slate-200 text-sm group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">Meus Palpites</div>
-            <div class="text-xs text-slate-500 mt-0.5">{{ $predictedCount }} enviados</div>
-        </a>
+        @else
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                @foreach($groupRankings as $gr)
+                    @php
+                        $ranking    = $gr['ranking'];
+                        $myPosition = $gr['my_position'];
+                        $myPoints   = $gr['my_points'];
+                        $top5       = $ranking->take(5);
+                        $userId     = auth()->id();
+                        $userInTop5 = $top5->contains(fn($m) => $m['user']->id === $userId);
+                    @endphp
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden">
+
+                        {{-- Cabeçalho do card --}}
+                        <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
+                            <div class="min-w-0">
+                                <h3 class="font-semibold text-slate-800 dark:text-slate-100 text-sm truncate">{{ $gr['group']->name }}</h3>
+                                @if($myPosition)
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                        Você está em
+                                        <span class="font-bold {{ $myPosition === 1 ? 'text-amber-500' : 'text-slate-700 dark:text-slate-200' }}">{{ $myPosition }}º lugar</span>
+                                        com <span class="font-semibold text-slate-700 dark:text-slate-200">{{ $myPoints }} pts</span>
+                                    </p>
+                                @endif
+                            </div>
+                            <a href="{{ route('bolao.show', $gr['group']) }}"
+                               class="flex-shrink-0 text-xs font-medium text-emerald-600 dark:text-emerald-400 hover:underline whitespace-nowrap">
+                                Ver detalhes →
+                            </a>
+                        </div>
+
+                        {{-- Ranking compacto --}}
+                        <div class="divide-y divide-slate-50 dark:divide-slate-800/60">
+                            @foreach($top5 as $i => $member)
+                                @php $pos = $i + 1; $isMe = $member['user']->id === $userId; @endphp
+                                <div class="flex items-center gap-3 px-5 py-2.5 {{ $isMe ? 'bg-emerald-50/60 dark:bg-emerald-500/5' : '' }}">
+                                    <span class="w-6 text-center text-sm flex-shrink-0 {{ $isMe ? 'font-bold' : '' }}">
+                                        @if($pos === 1) 🥇
+                                        @elseif($pos === 2) 🥈
+                                        @elseif($pos === 3) 🥉
+                                        @else <span class="text-xs text-slate-400">{{ $pos }}</span>
+                                        @endif
+                                    </span>
+                                    <div class="w-7 h-7 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                                        @if($member['user']->isAvatarEmoji())
+                                            <span class="text-sm leading-none">{{ $member['user']->avatarContent() }}</span>
+                                        @else
+                                            <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400">{{ $member['user']->avatarContent() }}</span>
+                                        @endif
+                                    </div>
+                                    <span class="flex-1 text-sm truncate {{ $isMe ? 'font-semibold text-emerald-700 dark:text-emerald-300' : 'text-slate-700 dark:text-slate-300' }}">
+                                        {{ $member['user']->displayName() }}{{ $isMe ? ' (você)' : '' }}
+                                    </span>
+                                    <span class="text-sm font-bold tabular-nums {{ $pos === 1 ? 'text-amber-500' : 'text-slate-500 dark:text-slate-400' }}">
+                                        {{ $member['points'] }}
+                                    </span>
+                                </div>
+                            @endforeach
+
+                            {{-- Usuário fora do top 5 --}}
+                            @if(!$userInTop5 && $myPosition)
+                                <div class="px-5 py-1 text-center text-xs text-slate-400">· · ·</div>
+                                @php $myEntry = $ranking->firstWhere(fn($m) => $m['user']->id === $userId); @endphp
+                                @if($myEntry)
+                                <div class="flex items-center gap-3 px-5 py-2.5 bg-emerald-50/60 dark:bg-emerald-500/5">
+                                    <span class="w-6 text-center text-xs text-slate-400 flex-shrink-0">{{ $myPosition }}</span>
+                                    <div class="w-7 h-7 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                                        @if($myEntry['user']->isAvatarEmoji())
+                                            <span class="text-sm leading-none">{{ $myEntry['user']->avatarContent() }}</span>
+                                        @else
+                                            <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400">{{ $myEntry['user']->avatarContent() }}</span>
+                                        @endif
+                                    </div>
+                                    <span class="flex-1 text-sm font-semibold text-emerald-700 dark:text-emerald-300 truncate">
+                                        {{ $myEntry['user']->displayName() }} (você)
+                                    </span>
+                                    <span class="text-sm font-bold tabular-nums text-slate-500 dark:text-slate-400">{{ $myEntry['points'] }}</span>
+                                </div>
+                                @endif
+                            @endif
+                        </div>
+
+                    </div>
+                @endforeach
+            </div>
+        @endif
     </div>
 
     {{-- Bônus de Campeão e Vice --}}
