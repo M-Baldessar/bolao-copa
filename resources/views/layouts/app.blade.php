@@ -7,6 +7,7 @@
     {{-- Páginas autenticadas não devem ser indexadas --}}
     <title>Bolão Copa 2026 — @yield('title', 'Dashboard')</title>
     <meta name="robots" content="noindex, nofollow">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="canonical" href="{{ url()->current() }}">
 
     {{-- Open Graph --}}

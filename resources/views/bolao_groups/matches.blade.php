@@ -89,7 +89,8 @@
                  data-match-id="{{ $match->id }}"
                  data-home-strength="{{ $match->homeTeam->strength }}"
                  data-away-strength="{{ $match->awayTeam->strength }}"
-                 data-available="{{ (!$locked && !$finished) ? 'true' : 'false' }}">
+                 data-available="{{ (!$locked && !$finished) ? 'true' : 'false' }}"
+                 data-has-prediction="{{ $prediction ? 'true' : 'false' }}">
 
                 {{-- Header info --}}
                 <div class="flex items-center gap-2 mb-4">
@@ -259,12 +260,25 @@ function saveAllPredictions() {
         },
         body: JSON.stringify({ predictions: predictions }),
     })
-    .then(function (r) { return r.json(); })
-    .then(function (data) {
-        window.location.reload();
+    .then(function (r) {
+        if (!r.ok) {
+            return r.json().then(function (err) {
+                throw new Error(err.message || 'Erro ' + r.status);
+            });
+        }
+        return r.json();
     })
-    .catch(function () {
-        alert('Erro ao salvar. Tente novamente.');
+    .then(function (data) {
+        if (data.saved > 0) {
+            window.location.reload();
+        } else {
+            alert('Nenhum palpite foi salvo. As partidas podem estar bloqueadas ou já encerradas.');
+            btn.disabled = false;
+            btn.innerHTML = '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Salvar todos';
+        }
+    })
+    .catch(function (err) {
+        alert('Erro ao salvar: ' + (err.message || 'Tente novamente.'));
         btn.disabled = false;
         btn.innerHTML = '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Salvar todos';
     });
@@ -275,6 +289,8 @@ function autoFillInputs() {
     var filled = 0;
 
     cards.forEach(function (card) {
+        if (card.dataset.hasPrediction === 'true') return;
+
         var matchId      = card.dataset.matchId;
         var homeStrength = parseInt(card.dataset.homeStrength, 10);
         var awayStrength = parseInt(card.dataset.awayStrength, 10);
