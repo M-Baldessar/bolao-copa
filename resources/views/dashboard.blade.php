@@ -23,7 +23,7 @@
     </div>
 
     {{-- Topo simplificado: Total de partidas + Progresso + Ver Grupos --}}
-    @php $progress = $totalMatches > 0 ? round(($predictedCount / $totalMatches) * 100) : 0; @endphp
+    @php $progress = $totalNeeded > 0 ? min(100, round(($predictedCount / $totalNeeded) * 100)) : 0; @endphp
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 animate-in stagger-1">
 
         {{-- Total de Partidas --}}
@@ -101,6 +101,22 @@
                                class="flex-shrink-0 text-xs font-medium text-emerald-600 dark:text-emerald-400 hover:underline whitespace-nowrap">
                                 Ver detalhes →
                             </a>
+                        </div>
+
+                        {{-- Progresso de palpites neste bolão --}}
+                        @php
+                            $grProgress = $gr['total_matches'] > 0
+                                ? min(100, round(($gr['predicted_count'] / $gr['total_matches']) * 100))
+                                : 0;
+                        @endphp
+                        <div class="px-5 py-3 border-b border-slate-100 dark:border-slate-800 flex items-center gap-3">
+                            <div class="flex-1 bg-slate-200 dark:bg-slate-800 rounded-full h-1.5">
+                                <div class="h-1.5 rounded-full transition-all duration-700 {{ $grProgress === 100 ? 'bg-emerald-500' : 'bg-amber-500' }}"
+                                     style="width: {{ $grProgress }}%"></div>
+                            </div>
+                            <span class="text-xs font-semibold tabular-nums {{ $grProgress === 100 ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400' }} flex-shrink-0">
+                                {{ $gr['predicted_count'] }}/{{ $gr['total_matches'] }}
+                            </span>
                         </div>
 
                         {{-- Ranking compacto --}}

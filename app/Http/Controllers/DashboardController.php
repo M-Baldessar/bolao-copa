@@ -14,9 +14,7 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
-        $totalMatches   = GameMatch::count();
-        $predictedCount = $user->predictions()->count();
-        $remainingCount = $totalMatches - $predictedCount;
+        $totalMatches = GameMatch::where('stage', 'group')->count();
 
         // Bolões do usuário com a escolha de campeão carregada
         $myGroups = BolaoGroup::where('owner_id', $user->id)
@@ -25,15 +23,28 @@ class DashboardController extends Controller
             ->with('members')
             ->get();
 
-        // Ranking de cada bolão com posição do usuário logado
-        $groupRankings = $myGroups->map(function ($group) use ($user) {
+        // Progresso global: cada bolão precisa dos seus próprios 72 palpites
+        $totalNeeded    = $totalMatches * max(1, $myGroups->count());
+        $predictedCount = $user->predictions()
+            ->whereHas('match', fn($q) => $q->where('stage', 'group'))
+            ->count();
+        $remainingCount = max(0, $totalNeeded - $predictedCount);
+
+        // Ranking de cada bolão com posição e progresso do usuário logado
+        $groupRankings = $myGroups->map(function ($group) use ($user, $totalMatches) {
             $ranking  = $group->buildRanking();
             $myIndex  = $ranking->search(fn($m) => $m['user']->id === $user->id);
+            $predictedInGroup = $user->predictions()
+                ->where('bolao_group_id', $group->id)
+                ->whereHas('match', fn($q) => $q->where('stage', 'group'))
+                ->count();
             return [
-                'group'       => $group,
-                'ranking'     => $ranking,
-                'my_position' => $myIndex !== false ? $myIndex + 1 : null,
-                'my_points'   => $myIndex !== false ? $ranking[$myIndex]['points'] : 0,
+                'group'           => $group,
+                'ranking'         => $ranking,
+                'my_position'     => $myIndex !== false ? $myIndex + 1 : null,
+                'my_points'       => $myIndex !== false ? $ranking[$myIndex]['points'] : 0,
+                'predicted_count' => $predictedInGroup,
+                'total_matches'   => $totalMatches,
             ];
         });
 
@@ -52,6 +63,7 @@ class DashboardController extends Controller
 
         return view('dashboard', compact(
             'totalMatches',
+            'totalNeeded',
             'predictedCount',
             'remainingCount',
             'myGroups',
