@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Team extends Model
 {
-    protected $fillable = ['name', 'code', 'flag_emoji', 'group_id'];
+    protected $fillable = ['name', 'code', 'flag_emoji', 'group_id', 'position', 'points', 'played', 'won', 'drawn', 'lost', 'goals_for', 'goals_against'];
 
     public function group(): BelongsTo
     {

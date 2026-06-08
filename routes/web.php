@@ -61,5 +61,8 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/eliminatorias/criar', [AdminController::class, 'createKnockout'])->name('admin.knockout.create');
         Route::post('/eliminatorias', [AdminController::class, 'storeKnockout'])->name('admin.knockout.store');
+
+        Route::get('/usuarios', [AdminController::class, 'users'])->name('admin.users');
+        Route::get('/usuarios/stats', [AdminController::class, 'userStats'])->name('admin.users.stats');
     });
 });

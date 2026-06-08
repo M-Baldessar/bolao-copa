@@ -99,8 +99,14 @@
                     <a href="{{ route('admin.results') }}"
                        role="listitem"
                        class="ml-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-all
-                              bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-500/20 hover:text-red-700 dark:hover:text-red-300">
-                        <span aria-hidden="true">⚙</span> Admin
+                              {{ request()->routeIs('admin.results') || request()->routeIs('admin.knockout.*') ? 'bg-red-500/15 border border-red-500/40 text-red-700 dark:text-red-300' : 'bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-500/20 hover:text-red-700 dark:hover:text-red-300' }}">
+                        <span aria-hidden="true">⚙</span> Resultados
+                    </a>
+                    <a href="{{ route('admin.users') }}"
+                       role="listitem"
+                       class="px-3.5 py-2 rounded-lg text-sm font-medium transition-all
+                              {{ request()->routeIs('admin.users*') ? 'bg-red-500/15 border border-red-500/40 text-red-700 dark:text-red-300' : 'bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-500/20 hover:text-red-700 dark:hover:text-red-300' }}">
+                        <span aria-hidden="true">👥</span> Usuários
                     </a>
                     @endif
                 </div>
@@ -109,7 +115,7 @@
                 <div class="flex items-center gap-2">
 
                     {{-- Profile dropdown --}}
-                    <div class="hidden sm:block relative" id="profile-menu">
+                    <div class="relative" id="profile-menu">
                         <button type="button"
                                 onclick="toggleProfileMenu()"
                                 aria-expanded="false"
@@ -128,11 +134,11 @@
                                     <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400">{{ auth()->user()->avatarContent() }}</span>
                                 @endif
                             </div>
-                            <span class="text-slate-600 dark:text-slate-400 text-sm group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
+                            <span class="hidden sm:inline text-slate-600 dark:text-slate-400 text-sm group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
                                 {{ auth()->user()->displayName() }}
                             </span>
                             <svg id="profile-chevron"
-                                 class="w-3 h-3 text-slate-400 dark:text-slate-600 transition-transform duration-200"
+                                 class="hidden sm:block w-3 h-3 text-slate-400 dark:text-slate-600 transition-transform duration-200"
                                  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                             </svg>
@@ -140,7 +146,7 @@
 
                         {{-- Dropdown panel --}}
                         <div id="profile-dropdown"
-                             class="hidden absolute right-0 top-[calc(100%+8px)] w-80 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xl shadow-black/10 dark:shadow-black/40 overflow-hidden z-50"
+                             class="hidden absolute right-0 top-[calc(100%+8px)] w-80 max-w-[calc(100vw-1rem)] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xl shadow-black/10 dark:shadow-black/40 overflow-hidden z-50"
                              role="dialog"
                              aria-label="Editar perfil"
                              aria-modal="false">
@@ -290,7 +296,12 @@
                 <a href="{{ route('admin.results') }}"
                    role="listitem"
                    class="px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400">
-                    ⚙ Admin
+                    ⚙ Resultados
+                </a>
+                <a href="{{ route('admin.users') }}"
+                   role="listitem"
+                   class="px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400">
+                    👥 Usuários
                 </a>
                 @endif
             </div>

@@ -13,3 +13,9 @@ Schedule::command('matches:sync-results')
     ->everyFiveMinutes()
     ->withoutOverlapping()
     ->runInBackground();
+
+// Sincroniza classificação dos grupos a cada 15 minutos
+Schedule::command('matches:sync-standings')
+    ->everyFifteenMinutes()
+    ->withoutOverlapping()
+    ->runInBackground();
