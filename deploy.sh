@@ -14,7 +14,7 @@ composer install --no-dev --optimize-autoloader
 
 echo "--- Compilando assets ---"
 npm install
-npm run build
+./node_modules/.bin/vite build
 
 echo "--- Rodando migrations ---"
 php artisan migrate --force
