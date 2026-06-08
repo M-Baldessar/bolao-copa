@@ -112,10 +112,10 @@
                 </div>
 
                 {{-- Usuário + Toggle + Logout --}}
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 relative">
 
                     {{-- Profile dropdown --}}
-                    <div class="relative" id="profile-menu">
+                    <div id="profile-menu">
                         <button type="button"
                                 onclick="toggleProfileMenu()"
                                 aria-expanded="false"

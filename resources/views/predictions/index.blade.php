@@ -49,22 +49,23 @@
         </div>
 
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden animate-in stagger-2">
+          <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <thead class="border-b border-slate-100 dark:border-slate-800">
                     <tr>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-500 uppercase tracking-wider">Fase</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-500 uppercase tracking-wider hidden sm:table-cell">Fase</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-500 uppercase tracking-wider">Partida</th>
-                        <th class="px-4 py-3 text-center text-xs font-semibold text-slate-600 dark:text-slate-500 uppercase tracking-wider">Seu Palpite</th>
+                        <th class="px-4 py-3 text-center text-xs font-semibold text-slate-600 dark:text-slate-500 uppercase tracking-wider">Palpite</th>
                         <th class="px-4 py-3 text-center text-xs font-semibold text-slate-600 dark:text-slate-500 uppercase tracking-wider hidden sm:table-cell">Resultado</th>
                         <th class="px-4 py-3 text-center text-xs font-semibold text-slate-600 dark:text-slate-500 uppercase tracking-wider">Status</th>
-                        <th class="px-4 py-3 text-center text-xs font-semibold text-slate-600 dark:text-slate-500 uppercase tracking-wider">Bolão</th>
+                        <th class="px-4 py-3 text-center text-xs font-semibold text-slate-600 dark:text-slate-500 uppercase tracking-wider hidden sm:table-cell">Bolão</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60">
                     @foreach($predictions as $prediction)
                         @php $result = $prediction->result(); @endphp
                         <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
-                            <td class="px-4 py-3">
+                            <td class="px-4 py-3 hidden sm:table-cell">
                                 @if($prediction->match->stage === 'group')
                                     <span class="text-xs font-semibold text-emerald-700 dark:text-emerald-400">Grupo {{ $prediction->match->group?->name }}</span>
                                 @else
@@ -96,42 +97,29 @@
                                     <span class="text-slate-400 dark:text-slate-700 text-base">—</span>
                                 @endif
                             </td>
-                            <td class="px-4 py-3 text-center">
-                                @if($result === 'pending')
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-500 border border-slate-200 dark:border-slate-700">
-                                        Aguardando
-                                    </span>
-                                @elseif($result === 'exact')
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20">
-                                        ✓ Placar Exato +20
-                                    </span>
-                                @elseif($result === 'winner_score')
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20">
-                                        ✓ Placar do Vencedor +15
-                                    </span>
-                                @elseif($result === 'goal_diff')
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-50 dark:bg-sky-500/10 text-sky-700 dark:text-sky-400 border border-sky-200 dark:border-sky-500/20">
-                                        ✓ Diferença de gols do Vencedor +12
-                                    </span>
-                                @elseif($result === 'loser_score')
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20">
-                                        ✓ Placar do Perdedor +10
-                                    </span>
-                                @elseif($result === 'correct_winner')
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/20">
-                                        ✓ Vencedor +8
-                                    </span>
-                                @elseif($result === 'draw')
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-50 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-500/20">
-                                        ~ Empate +8
-                                    </span>
-                                @else
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-500/20">
-                                        ✗ Errado
-                                    </span>
-                                @endif
+                            <td class="px-4 py-3 text-center whitespace-nowrap">
+                                @php
+                                    $statusMap = [
+                                        'pending'        => ['color' => 'slate',  'short' => 'Aguard.', 'long' => 'Aguardando',                    'prefix' => ''],
+                                        'exact'          => ['color' => 'emerald','short' => '✓ +20',   'long' => 'Placar Exato +20',              'prefix' => '✓ '],
+                                        'winner_score'   => ['color' => 'blue',   'short' => '✓ +15',   'long' => 'Placar do Vencedor +15',        'prefix' => '✓ '],
+                                        'goal_diff'      => ['color' => 'sky',    'short' => '✓ +12',   'long' => 'Diff. de Gols +12',             'prefix' => '✓ '],
+                                        'loser_score'    => ['color' => 'amber',  'short' => '✓ +10',   'long' => 'Placar do Perdedor +10',        'prefix' => '✓ '],
+                                        'correct_winner' => ['color' => 'indigo', 'short' => '✓ +8',    'long' => 'Vencedor Certo +8',             'prefix' => '✓ '],
+                                        'draw'           => ['color' => 'purple', 'short' => '~ +8',    'long' => 'Empate Certo +8',               'prefix' => '~ '],
+                                        'wrong'          => ['color' => 'red',    'short' => '✗ 0',     'long' => 'Errado',                        'prefix' => '✗ '],
+                                    ];
+                                    $s = $statusMap[$result] ?? $statusMap['pending'];
+                                @endphp
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold
+                                    bg-{{ $s['color'] }}-50 dark:bg-{{ $s['color'] }}-500/10
+                                    text-{{ $s['color'] }}-700 dark:text-{{ $s['color'] }}-400
+                                    border border-{{ $s['color'] }}-200 dark:border-{{ $s['color'] }}-500/20">
+                                    <span class="sm:hidden">{{ $s['short'] }}</span>
+                                    <span class="hidden sm:inline">{{ $s['long'] }}</span>
+                                </span>
                             </td>
-                            <td class="px-4 py-3 text-center">
+                            <td class="px-4 py-3 text-center hidden sm:table-cell">
                                 <a href="{{ route('bolao.show', $prediction->bolaoGroup) }}"
                                    class="text-xs font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 rounded">
                                     {{ $prediction->bolaoGroup->name }}
@@ -141,6 +129,7 @@
                     @endforeach
                 </tbody>
             </table>
+          </div>
         </div>
     @endif
 @endsection

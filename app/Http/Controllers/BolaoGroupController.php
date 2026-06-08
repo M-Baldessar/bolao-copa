@@ -7,6 +7,7 @@ use App\Models\ChampionPick;
 use App\Models\GameMatch;
 use App\Models\Group;
 use App\Models\Prediction;
+use App\Services\PredictionGenerator;
 use Illuminate\Http\Request;
 
 class BolaoGroupController extends Controller
@@ -134,6 +135,58 @@ class BolaoGroupController extends Controller
             'success',
             "Palpite para {$match->homeTeam->name} x {$match->awayTeam->name} salvo!"
         );
+    }
+
+    public function autoFillPredictions(BolaoGroup $bolaoGroup)
+    {
+        $user = auth()->user();
+        $isMember = $bolaoGroup->members()->where('user_id', $user->id)->exists()
+            || $bolaoGroup->owner_id === $user->id;
+
+        if (!$isMember) {
+            abort(403, 'Você não faz parte deste grupo.');
+        }
+
+        // IDs de partidas que o usuário já palpitou neste bolão
+        $alreadyPredicted = Prediction::where('user_id', $user->id)
+            ->where('bolao_group_id', $bolaoGroup->id)
+            ->pluck('match_id')
+            ->toArray();
+
+        // Busca partidas da fase de grupos sem resultado e fora do bloqueio de 1h
+        $matches = GameMatch::where('stage', 'group')
+            ->whereNull('home_score')
+            ->whereNotIn('id', $alreadyPredicted)
+            ->where(function ($q) {
+                $q->whereNull('match_date')
+                  ->orWhere('match_date', '>', now()->addHour());
+            })
+            ->with(['homeTeam', 'awayTeam'])
+            ->get();
+
+        $count = 0;
+        foreach ($matches as $match) {
+            $prediction = PredictionGenerator::generate(
+                $match->homeTeam->strength,
+                $match->awayTeam->strength
+            );
+
+            Prediction::create([
+                'user_id'        => $user->id,
+                'bolao_group_id' => $bolaoGroup->id,
+                'match_id'       => $match->id,
+                'home_score'     => $prediction['home_score'],
+                'away_score'     => $prediction['away_score'],
+            ]);
+
+            $count++;
+        }
+
+        if ($count === 0) {
+            return back()->with('success', 'Todos os palpites disponíveis já foram preenchidos!');
+        }
+
+        return back()->with('success', "{$count} palpite(s) gerado(s) automaticamente com base na força das seleções.");
     }
 
     public function watch(BolaoGroup $bolaoGroup)

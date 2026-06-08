@@ -12,76 +12,76 @@ class TeamSeeder extends Seeder
     {
         $teams = [
             'A' => [
-                ['name' => 'México',          'code' => 'MEX', 'flag_emoji' => '🇲🇽'],
-                ['name' => 'África do Sul', 'code' => 'RSA', 'flag_emoji' => '🇿🇦'],
-                ['name' => 'Coreia do Sul',  'code' => 'KOR', 'flag_emoji' => '🇰🇷'],
-                ['name' => 'República Tcheca', 'code' => 'REP', 'flag_emoji' => '🇨🇿'],
+                ['name' => 'México',              'code' => 'MEX', 'flag_emoji' => '🇲🇽', 'strength' => 78],
+                ['name' => 'África do Sul',        'code' => 'RSA', 'flag_emoji' => '🇿🇦', 'strength' => 53],
+                ['name' => 'Coreia do Sul',        'code' => 'KOR', 'flag_emoji' => '🇰🇷', 'strength' => 72],
+                ['name' => 'República Tcheca',     'code' => 'REP', 'flag_emoji' => '🇨🇿', 'strength' => 67],
             ],
             'B' => [
-                ['name' => 'Canadá',   'code' => 'CAN', 'flag_emoji' => '🇨🇦'],
-                ['name' => 'Bósnia e Herzegovina', 'code' => 'BOS', 'flag_emoji' => '🇧🇦'],
-                ['name' => 'Catar',    'code' => 'QAT', 'flag_emoji' => '🇶🇦'],
-                ['name' => 'Suíça',    'code' => 'SUI', 'flag_emoji' => '🇨🇭'],
+                ['name' => 'Canadá',               'code' => 'CAN', 'flag_emoji' => '🇨🇦', 'strength' => 74],
+                ['name' => 'Bósnia e Herzegovina', 'code' => 'BOS', 'flag_emoji' => '🇧🇦', 'strength' => 60],
+                ['name' => 'Catar',                'code' => 'QAT', 'flag_emoji' => '🇶🇦', 'strength' => 54],
+                ['name' => 'Suíça',                'code' => 'SUI', 'flag_emoji' => '🇨🇭', 'strength' => 78],
             ],
             'C' => [
-                ['name' => 'Brasil',   'code' => 'BRA', 'flag_emoji' => '🇧🇷'],
-                ['name' => 'Marrocos', 'code' => 'MAR', 'flag_emoji' => '🇲🇦'],
-                ['name' => 'Haiti',    'code' => 'HTI', 'flag_emoji' => '🇭🇹'],
-                ['name' => 'Escócia',  'code' => 'SCO', 'flag_emoji' => '🏴󠁧󠁢󠁳󠁣󠁴󠁿'],
+                ['name' => 'Brasil',               'code' => 'BRA', 'flag_emoji' => '🇧🇷', 'strength' => 91],
+                ['name' => 'Marrocos',             'code' => 'MAR', 'flag_emoji' => '🇲🇦', 'strength' => 76],
+                ['name' => 'Haiti',                'code' => 'HTI', 'flag_emoji' => '🇭🇹', 'strength' => 42],
+                ['name' => 'Escócia',              'code' => 'SCO', 'flag_emoji' => '🏴󠁧󠁢󠁳󠁣󠁴󠁿', 'strength' => 68],
             ],
             'D' => [
-                ['name' => 'Estados Unidos', 'code' => 'USA', 'flag_emoji' => '🇺🇸'],
-                ['name' => 'Paraguai',       'code' => 'PAR', 'flag_emoji' => '🇵🇾'],
-                ['name' => 'Austrália',      'code' => 'AUS', 'flag_emoji' => '🇦🇺'],
-                ['name' => 'Turquia', 'code' => 'TUR', 'flag_emoji' => '🇹🇷'],
+                ['name' => 'Estados Unidos',       'code' => 'USA', 'flag_emoji' => '🇺🇸', 'strength' => 72],
+                ['name' => 'Paraguai',             'code' => 'PAR', 'flag_emoji' => '🇵🇾', 'strength' => 62],
+                ['name' => 'Austrália',            'code' => 'AUS', 'flag_emoji' => '🇦🇺', 'strength' => 68],
+                ['name' => 'Turquia',              'code' => 'TUR', 'flag_emoji' => '🇹🇷', 'strength' => 72],
             ],
             'E' => [
-                ['name' => 'Alemanha',  'code' => 'GER', 'flag_emoji' => '🇩🇪'],
-                ['name' => 'Curaçao',   'code' => 'CUW', 'flag_emoji' => '🇨🇼'],
-                ['name' => 'Costa do Marfim', 'code' => 'CIV', 'flag_emoji' => '🇨🇮'],
-                ['name' => 'Equador',   'code' => 'ECU', 'flag_emoji' => '🇪🇨'],
+                ['name' => 'Alemanha',             'code' => 'GER', 'flag_emoji' => '🇩🇪', 'strength' => 86],
+                ['name' => 'Curaçao',              'code' => 'CUW', 'flag_emoji' => '🇨🇼', 'strength' => 45],
+                ['name' => 'Costa do Marfim',      'code' => 'CIV', 'flag_emoji' => '🇨🇮', 'strength' => 68],
+                ['name' => 'Equador',              'code' => 'ECU', 'flag_emoji' => '🇪🇨', 'strength' => 68],
             ],
             'F' => [
-                ['name' => 'Holanda',  'code' => 'NED', 'flag_emoji' => '🇳🇱'],
-                ['name' => 'Japão',    'code' => 'JPN', 'flag_emoji' => '🇯🇵'],
-                ['name' => 'Suécia',    'code' => 'SWE', 'flag_emoji' => '🇸🇪'],
-                ['name' => 'Tunísia',  'code' => 'TUN', 'flag_emoji' => '🇹🇳'],
+                ['name' => 'Holanda',              'code' => 'NED', 'flag_emoji' => '🇳🇱', 'strength' => 86],
+                ['name' => 'Japão',                'code' => 'JPN', 'flag_emoji' => '🇯🇵', 'strength' => 74],
+                ['name' => 'Suécia',               'code' => 'SWE', 'flag_emoji' => '🇸🇪', 'strength' => 72],
+                ['name' => 'Tunísia',              'code' => 'TUN', 'flag_emoji' => '🇹🇳', 'strength' => 62],
             ],
             'G' => [
-                ['name' => 'Bélgica',   'code' => 'BEL', 'flag_emoji' => '🇧🇪'],
-                ['name' => 'Egito',     'code' => 'EGY', 'flag_emoji' => '🇪🇬'],
-                ['name' => 'Irã',       'code' => 'IRN', 'flag_emoji' => '🇮🇷'],
-                ['name' => 'Nova Zelândia', 'code' => 'NZL', 'flag_emoji' => '🇳🇿'],
+                ['name' => 'Bélgica',              'code' => 'BEL', 'flag_emoji' => '🇧🇪', 'strength' => 82],
+                ['name' => 'Egito',                'code' => 'EGY', 'flag_emoji' => '🇪🇬', 'strength' => 60],
+                ['name' => 'Irã',                  'code' => 'IRN', 'flag_emoji' => '🇮🇷', 'strength' => 64],
+                ['name' => 'Nova Zelândia',        'code' => 'NZL', 'flag_emoji' => '🇳🇿', 'strength' => 50],
             ],
             'H' => [
-                ['name' => 'Espanha',        'code' => 'ESP', 'flag_emoji' => '🇪🇸'],
-                ['name' => 'Cabo Verde',      'code' => 'CPV', 'flag_emoji' => '🇨🇻'],
-                ['name' => 'Arábia Saudita', 'code' => 'KSA', 'flag_emoji' => '🇸🇦'],
-                ['name' => 'Uruguai',        'code' => 'URU', 'flag_emoji' => '🇺🇾'],
+                ['name' => 'Espanha',              'code' => 'ESP', 'flag_emoji' => '🇪🇸', 'strength' => 90],
+                ['name' => 'Cabo Verde',           'code' => 'CPV', 'flag_emoji' => '🇨🇻', 'strength' => 53],
+                ['name' => 'Arábia Saudita',       'code' => 'KSA', 'flag_emoji' => '🇸🇦', 'strength' => 60],
+                ['name' => 'Uruguai',              'code' => 'URU', 'flag_emoji' => '🇺🇾', 'strength' => 80],
             ],
             'I' => [
-                ['name' => 'França',   'code' => 'FRA', 'flag_emoji' => '🇫🇷'],
-                ['name' => 'Senegal',  'code' => 'SEN', 'flag_emoji' => '🇸🇳'],
-                ['name' => 'Iraque',   'code' => 'IRQ', 'flag_emoji' => '🇮🇶'],
-                ['name' => 'Noruega',  'code' => 'NOR', 'flag_emoji' => '🇳🇴'],
+                ['name' => 'França',               'code' => 'FRA', 'flag_emoji' => '🇫🇷', 'strength' => 90],
+                ['name' => 'Senegal',              'code' => 'SEN', 'flag_emoji' => '🇸🇳', 'strength' => 74],
+                ['name' => 'Iraque',               'code' => 'IRQ', 'flag_emoji' => '🇮🇶', 'strength' => 55],
+                ['name' => 'Noruega',              'code' => 'NOR', 'flag_emoji' => '🇳🇴', 'strength' => 73],
             ],
             'J' => [
-                ['name' => 'Argentina', 'code' => 'ARG', 'flag_emoji' => '🇦🇷'],
-                ['name' => 'Argélia',  'code' => 'ALG', 'flag_emoji' => '🇩🇿'],
-                ['name' => 'Áustria',  'code' => 'AUT', 'flag_emoji' => '🇦🇹'],
-                ['name' => 'Jordânia',  'code' => 'JOR', 'flag_emoji' => '🇯🇴'],
+                ['name' => 'Argentina',            'code' => 'ARG', 'flag_emoji' => '🇦🇷', 'strength' => 94],
+                ['name' => 'Argélia',              'code' => 'ALG', 'flag_emoji' => '🇩🇿', 'strength' => 65],
+                ['name' => 'Áustria',              'code' => 'AUT', 'flag_emoji' => '🇦🇹', 'strength' => 70],
+                ['name' => 'Jordânia',             'code' => 'JOR', 'flag_emoji' => '🇯🇴', 'strength' => 52],
             ],
             'K' => [
-                ['name' => 'Portugal',       'code' => 'POR', 'flag_emoji' => '🇵🇹'],
-                ['name' => 'República Democrática do Congo', 'code' => 'COD', 'flag_emoji' => '🇨🇩'],
-                ['name' => 'Uzbequistão',     'code' => 'UZB', 'flag_emoji' => '🇺🇿'],
-                ['name' => 'Colômbia',        'code' => 'COL', 'flag_emoji' => '🇨🇴'],
+                ['name' => 'Portugal',                          'code' => 'POR', 'flag_emoji' => '🇵🇹', 'strength' => 87],
+                ['name' => 'República Democrática do Congo',   'code' => 'COD', 'flag_emoji' => '🇨🇩', 'strength' => 52],
+                ['name' => 'Uzbequistão',                      'code' => 'UZB', 'flag_emoji' => '🇺🇿', 'strength' => 48],
+                ['name' => 'Colômbia',                         'code' => 'COL', 'flag_emoji' => '🇨🇴', 'strength' => 78],
             ],
             'L' => [
-                ['name' => 'Inglaterra',       'code' => 'ENG', 'flag_emoji' => '🏴󠁧󠁢󠁥󠁮󠁧󠁿'],
-                ['name' => 'Croácia',          'code' => 'CRO', 'flag_emoji' => '🇭🇷'],
-                ['name' => 'Gana',              'code' => 'GHA', 'flag_emoji' => '🇬🇭'],
-                ['name' => 'Panamá',            'code' => 'PAN', 'flag_emoji' => '🇵🇦'],
+                ['name' => 'Inglaterra',           'code' => 'ENG', 'flag_emoji' => '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'strength' => 87],
+                ['name' => 'Croácia',              'code' => 'CRO', 'flag_emoji' => '🇭🇷', 'strength' => 80],
+                ['name' => 'Gana',                 'code' => 'GHA', 'flag_emoji' => '🇬🇭', 'strength' => 65],
+                ['name' => 'Panamá',               'code' => 'PAN', 'flag_emoji' => '🇵🇦', 'strength' => 50],
             ],
         ];
 
@@ -89,9 +89,9 @@ class TeamSeeder extends Seeder
             $group = Group::where('name', $groupName)->first();
 
             foreach ($groupTeams as $teamData) {
-                Team::firstOrCreate(
+                Team::updateOrCreate(
                     ['code' => $teamData['code'], 'group_id' => $group->id],
-                    ['name' => $teamData['name'], 'flag_emoji' => $teamData['flag_emoji']]
+                    ['name' => $teamData['name'], 'flag_emoji' => $teamData['flag_emoji'], 'strength' => $teamData['strength']]
                 );
             }
         }

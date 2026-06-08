@@ -3,7 +3,7 @@
 @section('title', 'Palpites — ' . $bolaoGroup->name)
 
 @section('content')
-    <div class="flex items-center justify-between mb-6 animate-in">
+    <div class="flex items-start justify-between gap-4 mb-6 animate-in">
         <div>
             <a href="{{ route('bolao.show', $bolaoGroup) }}" class="inline-flex items-center gap-1.5 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-sm transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 rounded">
                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
@@ -14,6 +14,19 @@
             <h1 class="font-display font-bold text-3xl text-slate-900 dark:text-white tracking-wide mt-2">Fazer Palpites</h1>
             <p class="text-slate-500 mt-0.5 text-sm">Seus palpites neste bolão são independentes dos outros</p>
         </div>
+
+        {{-- Botão preencher automaticamente --}}
+        <button type="button" onclick="autoFillInputs()" class="flex-shrink-0 mt-1 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all
+                       bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700
+                       text-slate-700 dark:text-slate-300
+                       hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:border-emerald-300 dark:hover:border-emerald-500/40 hover:text-emerald-700 dark:hover:text-emerald-400
+                       focus-visible:ring-2 focus-visible:ring-emerald-500">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+            </svg>
+            <span class="hidden sm:inline">Preencher automaticamente</span>
+            <span class="sm:hidden">Auto</span>
+        </button>
     </div>
 
     {{-- Filtro por grupo / fase --}}
@@ -53,7 +66,11 @@
 
             <div class="bg-white dark:bg-slate-900 border {{ $prediction ? 'border-emerald-500/20' : 'border-slate-200 dark:border-slate-800' }} rounded-xl p-4 transition-all hover:border-slate-300 dark:hover:border-slate-700 animate-in"
                  style="animation-delay: {{ min($i * 0.03, 0.35) }}s"
-                 role="listitem">
+                 role="listitem"
+                 data-match-id="{{ $match->id }}"
+                 data-home-strength="{{ $match->homeTeam->strength }}"
+                 data-away-strength="{{ $match->awayTeam->strength }}"
+                 data-available="{{ (!$locked && !$finished) ? 'true' : 'false' }}">
 
                 {{-- Header info --}}
                 <div class="flex items-center gap-2 mb-4">
@@ -182,4 +199,85 @@
             </div>
         @endforelse
     </div>
+
+<script>
+function autoFillInputs() {
+    var cards = document.querySelectorAll('[data-match-id][data-available="true"]');
+    var filled = 0;
+
+    cards.forEach(function (card) {
+        var matchId      = card.dataset.matchId;
+        var homeStrength = parseInt(card.dataset.homeStrength, 10);
+        var awayStrength = parseInt(card.dataset.awayStrength, 10);
+
+        var homeInput = document.getElementById('home_score_' + matchId);
+        var awayInput = document.getElementById('away_score_' + matchId);
+
+        if (!homeInput || !awayInput || homeInput.disabled) return;
+
+        var result = generatePrediction(homeStrength, awayStrength);
+
+        homeInput.value = result.home;
+        awayInput.value = result.away;
+
+        // Destaque visual âmbar para sinalizar que foi preenchido automaticamente
+        [homeInput, awayInput].forEach(function (el) {
+            el.classList.remove('border-slate-300', 'dark:border-slate-700', 'border-emerald-500/40');
+            el.classList.add('border-amber-400', 'bg-amber-50');
+        });
+
+        filled++;
+    });
+
+    if (filled === 0) {
+        alert('Nenhum palpite disponível para preencher nesta visualização.');
+    }
+}
+
+function generatePrediction(homeStrength, awayStrength) {
+    var diff = homeStrength - awayStrength;
+
+    // Probabilidade de vitória do mandante (com leve vantagem de campo)
+    var homeWinProb = 0.52 + (diff / 100) * 0.38;
+    homeWinProb = Math.min(0.88, Math.max(0.12, homeWinProb));
+
+    // Probabilidade de empate: maior quando equilíbrio
+    var drawProb = Math.max(0.08, 0.26 - Math.abs(diff) / 350);
+    var awayWinProb = Math.max(0.04, 1.0 - homeWinProb - drawProb);
+
+    // Normaliza
+    var total = homeWinProb + drawProb + awayWinProb;
+    homeWinProb /= total;
+    drawProb    /= total;
+
+    var rand = Math.random();
+    var outcome = rand < homeWinProb ? 'home' : (rand < homeWinProb + drawProb ? 'draw' : 'away');
+
+    // Teto de gols pela média de força
+    var avg    = (homeStrength + awayStrength) / 2;
+    var maxWin = avg >= 78 ? 4 : (avg >= 60 ? 3 : 2);
+    var maxLoss = Math.max(0, maxWin - 1);
+
+    var home, away;
+
+    if (outcome === 'home') {
+        home = randInt(1, maxWin);
+        away = randInt(0, Math.min(home - 1, maxLoss));
+    } else if (outcome === 'away') {
+        away = randInt(1, maxWin);
+        home = randInt(0, Math.min(away - 1, maxLoss));
+    } else {
+        // Empate ponderado: 0×0 = 30%, 1×1 = 50%, 2×2 = 20%
+        var dr = Math.random();
+        var score = dr < 0.30 ? 0 : (dr < 0.80 ? 1 : 2);
+        home = away = score;
+    }
+
+    return { home: home, away: away };
+}
+
+function randInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+</script>
 @endsection
