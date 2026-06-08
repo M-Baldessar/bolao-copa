@@ -122,19 +122,57 @@ class BolaoGroupController extends Controller
         }
 
         $validated = $request->validate([
-            'home_score' => ['required', 'integer', 'min:0', 'max:20'],
-            'away_score' => ['required', 'integer', 'min:0', 'max:20'],
+            'home_score' => ['nullable', 'integer', 'min:0', 'max:20'],
+            'away_score' => ['nullable', 'integer', 'min:0', 'max:20'],
         ]);
 
         Prediction::updateOrCreate(
             ['user_id' => $user->id, 'bolao_group_id' => $bolaoGroup->id, 'match_id' => $match->id],
-            ['home_score' => $validated['home_score'], 'away_score' => $validated['away_score']]
+            ['home_score' => $validated['home_score'] ?? 0, 'away_score' => $validated['away_score'] ?? 0]
         );
 
         return back()->with(
             'success',
             "Palpite para {$match->homeTeam->name} x {$match->awayTeam->name} salvo!"
         );
+    }
+
+    public function storeBatchPredictions(Request $request, BolaoGroup $bolaoGroup)
+    {
+        $user = auth()->user();
+        $isMember = $bolaoGroup->members()->where('user_id', $user->id)->exists()
+            || $bolaoGroup->owner_id === $user->id;
+
+        if (!$isMember) {
+            abort(403);
+        }
+
+        $request->validate([
+            'predictions'                => ['required', 'array', 'min:1'],
+            'predictions.*.match_id'     => ['required', 'integer', 'exists:game_matches,id'],
+            'predictions.*.home_score'   => ['nullable', 'integer', 'min:0', 'max:20'],
+            'predictions.*.away_score'   => ['nullable', 'integer', 'min:0', 'max:20'],
+        ]);
+
+        $saved   = 0;
+        $skipped = 0;
+
+        foreach ($request->predictions as $item) {
+            $match = GameMatch::find($item['match_id']);
+
+            // Ignora partidas com resultado ou bloqueadas
+            if ($match->home_score !== null) { $skipped++; continue; }
+            if ($match->match_date && now()->gte($match->match_date->copy()->subHour())) { $skipped++; continue; }
+
+            Prediction::updateOrCreate(
+                ['user_id' => $user->id, 'bolao_group_id' => $bolaoGroup->id, 'match_id' => $match->id],
+                ['home_score' => (int)($item['home_score'] ?? 0), 'away_score' => (int)($item['away_score'] ?? 0)]
+            );
+
+            $saved++;
+        }
+
+        return response()->json(['saved' => $saved, 'skipped' => $skipped]);
     }
 
     public function autoFillPredictions(BolaoGroup $bolaoGroup)

@@ -50,6 +50,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/bolao/{bolaoGroup}/partidas', [BolaoGroupController::class, 'matches'])->name('bolao.matches');
     Route::get('/bolao/{bolaoGroup}/acompanhar', [BolaoGroupController::class, 'watch'])->name('bolao.watch');
     Route::post('/bolao/{bolaoGroup}/partidas/{match}', [BolaoGroupController::class, 'storePrediction'])->name('bolao.predict');
+    Route::post('/bolao/{bolaoGroup}/palpites/lote', [BolaoGroupController::class, 'storeBatchPredictions'])->name('bolao.predict.batch');
     Route::delete('/bolao/{bolaoGroup}/sair', [BolaoGroupController::class, 'leave'])->name('bolao.leave');
     Route::delete('/bolao/{bolaoGroup}', [BolaoGroupController::class, 'destroy'])->name('bolao.destroy');
 

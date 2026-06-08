@@ -15,8 +15,25 @@
             <p class="text-slate-500 mt-0.5 text-sm">Seus palpites neste bolão são independentes dos outros</p>
         </div>
 
-        {{-- Botão preencher automaticamente --}}
-        <button type="button" onclick="autoFillInputs()" class="flex-shrink-0 mt-1 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all
+        {{-- Botões de ação em lote --}}
+        <div class="flex-shrink-0 mt-1 flex items-center gap-2">
+
+        {{-- Salvar todos --}}
+        <button type="button" id="btn-save-all" onclick="saveAllPredictions()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all
+                       bg-emerald-600 dark:bg-emerald-500 border border-emerald-600 dark:border-emerald-500
+                       text-white
+                       hover:bg-emerald-700 dark:hover:bg-emerald-400
+                       focus-visible:ring-2 focus-visible:ring-emerald-500
+                       disabled:opacity-50 disabled:cursor-not-allowed">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span class="hidden sm:inline">Salvar todos</span>
+            <span class="sm:hidden">Salvar</span>
+        </button>
+
+        {{-- Preencher automaticamente --}}
+        <button type="button" onclick="autoFillInputs()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all
                        bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700
                        text-slate-700 dark:text-slate-300
                        hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:border-emerald-300 dark:hover:border-emerald-500/40 hover:text-emerald-700 dark:hover:text-emerald-400
@@ -24,9 +41,11 @@
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
             </svg>
-            <span class="hidden sm:inline">Preencher automaticamente</span>
+            <span class="hidden sm:inline">Gerar resultados</span>
             <span class="sm:hidden">Auto</span>
         </button>
+
+        </div>{{-- fim botões em lote --}}
     </div>
 
     {{-- Filtro por grupo / fase --}}
@@ -123,7 +142,7 @@
                             <label for="home_score_{{ $match->id }}" class="sr-only">Gols {{ $match->homeTeam->name }}</label>
                             <input type="number" id="home_score_{{ $match->id }}" name="home_score" min="0" max="20"
                                    value="{{ $prediction?->home_score ?? '' }}"
-                                   placeholder="0" required
+                                   placeholder="0"
                                    @if($locked || $finished) disabled @endif
                                    class="w-12 h-12 text-center border-2 rounded-xl text-lg font-bold text-slate-800 dark:text-slate-100 transition-all
                                           focus:outline-none
@@ -133,7 +152,7 @@
                             <label for="away_score_{{ $match->id }}" class="sr-only">Gols {{ $match->awayTeam->name }}</label>
                             <input type="number" id="away_score_{{ $match->id }}" name="away_score" min="0" max="20"
                                    value="{{ $prediction?->away_score ?? '' }}"
-                                   placeholder="0" required
+                                   placeholder="0"
                                    @if($locked || $finished) disabled @endif
                                    class="w-12 h-12 text-center border-2 rounded-xl text-lg font-bold text-slate-800 dark:text-slate-100 transition-all
                                           focus:outline-none
@@ -201,6 +220,56 @@
     </div>
 
 <script>
+var batchUrl  = '{{ route('bolao.predict.batch', $bolaoGroup) }}';
+var csrfToken = document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').getAttribute('content') : '';
+
+function saveAllPredictions() {
+    var cards = document.querySelectorAll('[data-match-id][data-available="true"]');
+    var predictions = [];
+
+    cards.forEach(function (card) {
+        var matchId   = card.dataset.matchId;
+        var homeInput = document.getElementById('home_score_' + matchId);
+        var awayInput = document.getElementById('away_score_' + matchId);
+
+        if (!homeInput || !awayInput || homeInput.disabled) return;
+
+        predictions.push({
+            match_id:   parseInt(matchId, 10),
+            home_score: parseInt(homeInput.value || '0', 10),
+            away_score: parseInt(awayInput.value || '0', 10),
+        });
+    });
+
+    if (predictions.length === 0) {
+        alert('Preencha pelo menos um palpite antes de salvar.');
+        return;
+    }
+
+    var btn = document.getElementById('btn-save-all');
+    btn.disabled = true;
+    btn.textContent = 'Salvando…';
+
+    fetch(batchUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json',
+        },
+        body: JSON.stringify({ predictions: predictions }),
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+        window.location.reload();
+    })
+    .catch(function () {
+        alert('Erro ao salvar. Tente novamente.');
+        btn.disabled = false;
+        btn.innerHTML = '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Salvar todos';
+    });
+}
+
 function autoFillInputs() {
     var cards = document.querySelectorAll('[data-match-id][data-available="true"]');
     var filled = 0;
