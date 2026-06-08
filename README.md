@@ -1,59 +1,123 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Bolão Copa 2026
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistema de bolão para a Copa do Mundo 2026, desenvolvido em Laravel 12. Permite que usuários façam palpites nos jogos, acompanhem a classificação dos grupos e disputem pontos em grupos privados.
 
-## About Laravel
+## Acesso
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+**Produção:** https://bolao.matheusbaldessar.tech
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Funcionalidades
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Cadastro e autenticação de usuários
+- Palpites nos jogos da fase de grupos e eliminatórias
+- Palpite no campeão e vice-campeão
+- Grupos privados de bolão com ranking entre participantes
+- Classificação dos grupos atualizada automaticamente via API
+- Sincronização automática de resultados após cada partida
+- Painel administrativo para gerenciar jogos e resultados
+- Recuperação de senha por e-mail
+- Suporte a tema claro e escuro
 
-## Learning Laravel
+## Tecnologias
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- **Backend:** PHP 8.4, Laravel 12
+- **Frontend:** Blade, Tailwind CSS 4, Vite
+- **Banco de dados:** MySQL
+- **API de dados:** football-data.org
+- **Servidor:** VPS Hostinger com CloudPanel + Nginx
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Instalação local
 
-## Laravel Sponsors
+### Pré-requisitos
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- PHP 8.2+
+- Composer
+- Node.js 18+
+- PostgreSQL ou MySQL
 
-### Premium Partners
+### Passo a passo
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+# 1. Clonar o repositório
+git clone https://github.com/M-Baldessar/bolao-copa.git
+cd bolao-copa
 
-## Contributing
+# 2. Instalar dependências
+composer install
+npm install
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# 3. Configurar ambiente
+cp .env.example .env
+php artisan key:generate
 
-## Code of Conduct
+# 4. Configurar o banco no .env
+# DB_CONNECTION=pgsql (ou mysql)
+# DB_DATABASE=bolao_copa
+# DB_USERNAME=seu_usuario
+# DB_PASSWORD=sua_senha
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# 5. Rodar migrations e seeders
+php artisan migrate
+php artisan db:seed --class=GroupSeeder
+php artisan db:seed --class=TeamSeeder
 
-## Security Vulnerabilities
+# 6. Importar partidas da API
+php artisan matches:sync-schedule
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# 7. Compilar assets e iniciar servidor
+npm run dev
+php artisan serve
+```
 
-## License
+## Variáveis de ambiente
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+| Variável | Descrição |
+|---|---|
+| `APP_URL` | URL da aplicação |
+| `DB_CONNECTION` | Driver do banco (`mysql` ou `pgsql`) |
+| `FOOTBALL_DATA_TOKEN` | Token da API football-data.org |
+| `DEPLOY_SECRET` | Senha do webhook de deploy automático |
+| `MAIL_*` | Configurações SMTP para envio de e-mails |
+
+## Comandos Artisan
+
+| Comando | Descrição |
+|---|---|
+| `php artisan matches:sync-schedule` | Importa as partidas da Copa via API |
+| `php artisan matches:sync-results` | Sincroniza os resultados das partidas finalizadas |
+| `php artisan matches:sync-standings` | Sincroniza a classificação dos grupos |
+| `php artisan db:seed --class=TeamSeeder` | Popula os times e grupos |
+
+## Agendamentos (Schedule)
+
+| Comando | Frequência |
+|---|---|
+| `matches:sync-results` | A cada 5 minutos |
+| `matches:sync-standings` | A cada 15 minutos |
+
+Para ativar o scheduler no servidor:
+```
+* * * * * php /caminho/artisan schedule:run >> /dev/null 2>&1
+```
+
+## Deploy automático
+
+O projeto está configurado com webhook do GitHub. A cada `git push` para a branch `main`, o servidor executa automaticamente:
+
+1. `git pull origin main`
+2. `composer install`
+3. `npm run build`
+4. `php artisan migrate --force`
+5. Limpeza de caches
+
+O log de cada deploy fica em `storage/logs/deploy.log`.
+
+## Sistema de pontuação
+
+| Resultado | Pontos |
+|---|---|
+| Acerto exato do placar | 10 pts |
+| Acerto do vencedor + um placar | 7 pts |
+| Acerto apenas do vencedor | 5 pts |
+| Empate previsto corretamente | 5 pts |
+| Nenhum acerto | 0 pts |
