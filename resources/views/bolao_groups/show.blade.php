@@ -137,7 +137,7 @@
 
                         {{-- Escolha do campeão / vice --}}
                         @if(isset($item['championPick']) && $item['championPick'])
-                            <div class="hidden sm:flex flex-col gap-0.5 text-xs text-slate-500 flex-shrink-0">
+                            <div class="flex flex-col gap-0.5 text-xs text-slate-500 flex-shrink-0">
                                 <div class="flex items-center gap-1" title="Campeão: {{ $item['championPick']->team->name }}">
                                     <span aria-hidden="true">{{ $item['championPick']->team->flag_emoji }}</span>
                                     @if($item['championPick']->points() > 0)
