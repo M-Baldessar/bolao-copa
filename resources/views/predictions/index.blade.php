@@ -27,26 +27,48 @@
             </a>
         </div>
     @else
-        {{-- Legenda --}}
-        <div class="flex flex-wrap gap-2 mb-5 animate-in stagger-1" role="list" aria-label="Legenda de pontuação">
-            @php
-                $badges = [
-                    ['color' => 'emerald', 'label' => 'Placar Exato (20 pts)'],
-                    ['color' => 'blue',    'label' => 'Placar do Vencedor (15 pts)'],
-                    ['color' => 'sky',     'label' => 'Vencedor + Diff. Gols (12 pts)'],
-                    ['color' => 'amber',   'label' => 'Vencedor + Placar Perdedor (10 pts)'],
-                    ['color' => 'indigo',  'label' => 'Vencedor Certo / Empate Certo (8 pts)'],
-                    ['color' => 'red',     'label' => 'Errado (0 pts)'],
-                    ['color' => 'slate',   'label' => 'Aguardando'],
-                ];
-            @endphp
-            @foreach($badges as $badge)
-                <span class="inline-flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-500 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-1 rounded-full" role="listitem">
-                    <span class="w-2 h-2 rounded-full bg-{{ $badge['color'] }}-500" aria-hidden="true"></span>
-                    {{ $badge['label'] }}
-                </span>
-            @endforeach
+        {{-- Legenda de pontuação --}}
+        @php
+            $badges = [
+                ['color' => 'emerald', 'label' => 'Placar Exato (20 pts)'],
+                ['color' => 'blue',    'label' => 'Placar do Vencedor (15 pts)'],
+                ['color' => 'sky',     'label' => 'Vencedor + Diff. Gols (12 pts)'],
+                ['color' => 'amber',   'label' => 'Vencedor + Placar Perdedor (10 pts)'],
+                ['color' => 'indigo',  'label' => 'Vencedor Certo / Empate Certo (8 pts)'],
+                ['color' => 'red',     'label' => 'Errado (0 pts)'],
+                ['color' => 'slate',   'label' => 'Aguardando'],
+            ];
+        @endphp
+        <div class="mb-5 animate-in stagger-1">
+            <div class="flex items-center gap-2">
+                <button type="button" id="btn-legend-toggle" onclick="toggleLegend()"
+                        class="md:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 transition-all">
+                    Pontuação
+                    <svg id="legend-chevron" class="w-3 h-3 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+            </div>
+            <div id="legend-panel" class="hidden md:flex flex-wrap gap-2 mt-2" role="list" aria-label="Legenda de pontuação">
+                @foreach($badges as $badge)
+                    <span class="inline-flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-500 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-1 rounded-full" role="listitem">
+                        <span class="w-2 h-2 rounded-full bg-{{ $badge['color'] }}-500" aria-hidden="true"></span>
+                        {{ $badge['label'] }}
+                    </span>
+                @endforeach
+            </div>
         </div>
+
+        <script>
+        function toggleLegend() {
+            var panel = document.getElementById('legend-panel');
+            var chevron = document.getElementById('legend-chevron');
+            var isHidden = panel.classList.contains('hidden');
+            panel.classList.toggle('hidden', !isHidden);
+            panel.classList.toggle('flex', isHidden);
+            chevron.style.transform = isHidden ? 'rotate(180deg)' : '';
+        }
+        </script>
 
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden animate-in stagger-2">
           <div class="overflow-x-auto">

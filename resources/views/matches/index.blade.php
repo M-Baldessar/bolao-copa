@@ -15,30 +15,69 @@
     </div>
 
     {{-- Filtro por grupo / fase --}}
-    <div class="flex flex-wrap gap-1.5 mb-6 animate-in stagger-1" role="group" aria-label="Filtrar partidas">
-        <a href="{{ route('matches.index') }}"
-           class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all focus-visible:ring-2 focus-visible:ring-emerald-500
-                  {{ !$groupFilter && !$stageFilter ? 'bg-emerald-600 dark:bg-emerald-500 text-white' : 'bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 hover:text-slate-800 dark:hover:text-slate-200' }}"
-           {{ !$groupFilter && !$stageFilter ? 'aria-current=true' : '' }}>
-            Todos
-        </a>
-        @foreach($groups as $group)
-            <a href="{{ route('matches.index', ['group' => $group->name]) }}"
+    <div class="mb-6 animate-in stagger-1">
+        <div class="flex items-center gap-2">
+            <a href="{{ route('matches.index') }}"
                class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all focus-visible:ring-2 focus-visible:ring-emerald-500
-                      {{ $groupFilter === $group->name ? 'bg-emerald-600 dark:bg-emerald-500 text-white' : 'bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 hover:text-slate-800 dark:hover:text-slate-200' }}"
-               {{ $groupFilter === $group->name ? 'aria-current=true' : '' }}>
-                Grupo {{ $group->name }}
+                      {{ !$groupFilter && !$stageFilter ? 'bg-emerald-600 dark:bg-emerald-500 text-white' : 'bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 hover:text-slate-800 dark:hover:text-slate-200' }}"
+               {{ !$groupFilter && !$stageFilter ? 'aria-current=true' : '' }}>
+                Todos
             </a>
-        @endforeach
-        @foreach($knockoutStages as $value => $label)
-            <a href="{{ route('matches.index', ['stage' => $value]) }}"
-               class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all focus-visible:ring-2 focus-visible:ring-emerald-500
-                      {{ $stageFilter === $value ? 'bg-amber-600 dark:bg-amber-500 text-white' : 'bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700/80 hover:border-amber-300 dark:hover:border-amber-500/30 hover:text-amber-700 dark:hover:text-amber-300' }}"
-               {{ $stageFilter === $value ? 'aria-current=true' : '' }}>
-                {{ $label }}
-            </a>
-        @endforeach
+            <button type="button" id="btn-filter-toggle" onclick="toggleFilterPanel()"
+                    class="md:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all
+                           {{ $groupFilter || $stageFilter ? 'bg-emerald-600 dark:bg-emerald-500 text-white' : 'bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600' }}">
+                <span>
+                    @if($groupFilter) Grupo {{ $groupFilter }}
+                    @elseif($stageFilter) {{ $knockoutStages[$stageFilter] ?? $stageFilter }}
+                    @else Grupos / Fases
+                    @endif
+                </span>
+                <svg id="filter-chevron" class="w-3 h-3 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+            </button>
+        </div>
+        <div id="filter-panel" class="hidden md:flex flex-wrap gap-1.5 mt-2" role="group" aria-label="Filtrar partidas">
+            @foreach($groups as $group)
+                <a href="{{ route('matches.index', ['group' => $group->name]) }}"
+                   class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all focus-visible:ring-2 focus-visible:ring-emerald-500
+                          {{ $groupFilter === $group->name ? 'bg-emerald-600 dark:bg-emerald-500 text-white' : 'bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 hover:text-slate-800 dark:hover:text-slate-200' }}"
+                   {{ $groupFilter === $group->name ? 'aria-current=true' : '' }}>
+                    Grupo {{ $group->name }}
+                </a>
+            @endforeach
+            @foreach($knockoutStages as $value => $label)
+                <a href="{{ route('matches.index', ['stage' => $value]) }}"
+                   class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all focus-visible:ring-2 focus-visible:ring-emerald-500
+                          {{ $stageFilter === $value ? 'bg-amber-600 dark:bg-amber-500 text-white' : 'bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700/80 hover:border-amber-300 dark:hover:border-amber-500/30 hover:text-amber-700 dark:hover:text-amber-300' }}"
+                   {{ $stageFilter === $value ? 'aria-current=true' : '' }}>
+                    {{ $label }}
+                </a>
+            @endforeach
+        </div>
     </div>
+
+    <script>
+    function toggleFilterPanel() {
+        var panel = document.getElementById('filter-panel');
+        var chevron = document.getElementById('filter-chevron');
+        var isHidden = panel.classList.contains('hidden');
+        panel.classList.toggle('hidden', !isHidden);
+        panel.classList.toggle('flex', isHidden);
+        chevron.style.transform = isHidden ? 'rotate(180deg)' : '';
+    }
+    @if($groupFilter || $stageFilter)
+    document.addEventListener('DOMContentLoaded', function() {
+        var panel = document.getElementById('filter-panel');
+        if (panel && window.innerWidth < 768) {
+            panel.classList.remove('hidden');
+            panel.classList.add('flex');
+            var chevron = document.getElementById('filter-chevron');
+            if (chevron) chevron.style.transform = 'rotate(180deg)';
+        }
+    });
+    @endif
+    </script>
 
     {{-- Lista de partidas --}}
     <div class="space-y-2" role="list" aria-label="Lista de partidas">
@@ -78,7 +117,7 @@
                 <div class="flex items-center gap-3">
                     {{-- Time da casa --}}
                     <div class="flex items-center gap-2.5 flex-1 min-w-0 justify-end">
-                        <span class="font-semibold text-slate-700 dark:text-slate-200 text-sm truncate">{{ $match->homeTeam->name }}</span>
+                        <span class="font-semibold text-slate-700 dark:text-slate-200 text-sm truncate hidden sm:inline">{{ $match->homeTeam->name }}</span>
                         <span class="text-2xl leading-none flex-shrink-0" aria-hidden="true">{{ $match->homeTeam->flag_emoji }}</span>
                     </div>
 
@@ -106,7 +145,7 @@
                     {{-- Time visitante --}}
                     <div class="flex items-center gap-2.5 flex-1 min-w-0">
                         <span class="text-2xl leading-none flex-shrink-0" aria-hidden="true">{{ $match->awayTeam->flag_emoji }}</span>
-                        <span class="font-semibold text-slate-700 dark:text-slate-200 text-sm truncate">{{ $match->awayTeam->name }}</span>
+                        <span class="font-semibold text-slate-700 dark:text-slate-200 text-sm truncate hidden sm:inline">{{ $match->awayTeam->name }}</span>
                     </div>
                 </div>
             </div>

@@ -8,7 +8,7 @@
             <h1 class="font-display font-bold text-3xl text-slate-900 dark:text-white tracking-wide">Grupos da Copa 2026</h1>
             <p class="text-slate-500 mt-1 text-sm">12 grupos · 48 seleções · Fase de Grupos</p>
         </div>
-        <a href="{{ route('matches.index') }}"
+        <a href="{{ route('bolao.index') }}"
            class="bg-emerald-600 dark:bg-emerald-500 hover:bg-emerald-700 dark:hover:bg-emerald-400 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-lg shadow-emerald-500/15 focus-visible:ring-2 focus-visible:ring-emerald-500">
             Fazer Palpites
         </a>

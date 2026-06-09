@@ -59,6 +59,33 @@
                     </span>
                 </a>
 
+                {{-- Menu admin mobile (hambúrguer) --}}
+                @if(auth()->user()->is_admin)
+                <div class="flex md:hidden relative" id="admin-mobile-menu">
+                    <button type="button"
+                            onclick="toggleAdminMenu()"
+                            aria-expanded="false"
+                            aria-controls="admin-mobile-dropdown"
+                            aria-label="Menu administrador"
+                            class="p-2 rounded-lg text-red-600 dark:text-red-400 bg-red-500/10 border border-red-500/30 hover:bg-red-500/20 transition-all focus-visible:ring-2 focus-visible:ring-red-500">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                    <div id="admin-mobile-dropdown"
+                         class="hidden absolute left-0 top-[calc(100%+8px)] w-44 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl z-50 overflow-hidden">
+                        <a href="{{ route('admin.results') }}"
+                           class="flex items-center gap-2 px-4 py-3 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-500/10 transition {{ request()->routeIs('admin.results') || request()->routeIs('admin.knockout.*') ? 'bg-red-500/10' : '' }}">
+                            <span aria-hidden="true">⚙</span> Resultados
+                        </a>
+                        <a href="{{ route('admin.users') }}"
+                           class="flex items-center gap-2 px-4 py-3 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-500/10 transition border-t border-slate-100 dark:border-slate-800 {{ request()->routeIs('admin.users') ? 'bg-red-500/10' : '' }}">
+                            <span aria-hidden="true">👥</span> Usuários
+                        </a>
+                    </div>
+                </div>
+                @endif
+
                 {{-- Links centrais --}}
                 <div class="hidden md:flex items-center gap-0.5" role="list">
                     <a href="{{ route('dashboard') }}"
@@ -293,18 +320,6 @@
                    {{ request()->routeIs('bolao.*') ? 'aria-current=page' : '' }}>
                     Bolão
                 </a>
-                @if(auth()->user()->is_admin)
-                <a href="{{ route('admin.results') }}"
-                   role="listitem"
-                   class="px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400">
-                    ⚙ Resultados
-                </a>
-                <a href="{{ route('admin.users') }}"
-                   role="listitem"
-                   class="px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400">
-                    👥 Usuários
-                </a>
-                @endif
             </div>
         </div>
     </nav>
@@ -403,12 +418,33 @@
         document.addEventListener('click', function (e) {
             var menu = document.getElementById('profile-menu');
             if (menu && !menu.contains(e.target)) closeProfileMenu();
+
+            var adminMenu = document.getElementById('admin-mobile-menu');
+            if (adminMenu && !adminMenu.contains(e.target)) {
+                document.getElementById('admin-mobile-dropdown').classList.add('hidden');
+                adminMenu.querySelector('button').setAttribute('aria-expanded', 'false');
+            }
         });
 
         // Fechar com Escape
         document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') closeProfileMenu();
+            if (e.key === 'Escape') {
+                closeProfileMenu();
+                var adminMenu = document.getElementById('admin-mobile-menu');
+                if (adminMenu) {
+                    document.getElementById('admin-mobile-dropdown').classList.add('hidden');
+                    adminMenu.querySelector('button').setAttribute('aria-expanded', 'false');
+                }
+            }
         });
+
+        function toggleAdminMenu() {
+            var dropdown = document.getElementById('admin-mobile-dropdown');
+            var btn = document.getElementById('admin-mobile-menu').querySelector('button');
+            var isOpen = !dropdown.classList.contains('hidden');
+            dropdown.classList.toggle('hidden', isOpen);
+            btn.setAttribute('aria-expanded', String(!isOpen));
+        }
 
         // Seleciona emoji de seleção favorita
         function selectAvatarEmoji(emoji) {
