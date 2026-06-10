@@ -22,6 +22,131 @@
         </div>
     </div>
 
+    {{-- Bônus de Campeão e Vice --}}
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 mb-8 animate-in stagger-1">
+
+        {{-- Título --}}
+        <div class="flex items-center gap-2 mb-5">
+            <span class="text-lg leading-none" aria-hidden="true">⭐</span>
+            <div class="flex-1 min-w-0">
+                <h2 class="font-semibold text-slate-800 dark:text-slate-200 text-base">Bônus de Campeão e Vice</h2>
+            </div>
+            @if(!$champLocked)
+                <span class="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 px-2.5 py-1 rounded-full">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" aria-hidden="true"></span>
+                    Aberto
+                </span>
+            @else
+                <span class="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2.5 py-1 rounded-full">
+                    🔒 Encerrado
+                </span>
+            @endif
+        </div>
+
+        {{-- Cards de bônus --}}
+        <div class="grid grid-cols-2 gap-3 mb-5">
+            <div class="flex items-center gap-3 p-4 rounded-xl bg-amber-50 dark:bg-amber-500/5 border border-amber-200 dark:border-amber-500/20">
+                <span class="text-2xl leading-none flex-shrink-0" aria-hidden="true">🏆</span>
+                <div class="min-w-0">
+                    <p class="font-bold text-amber-700 dark:text-amber-400 text-base leading-tight">100 pontos</p>
+                    <p class="text-xs text-amber-600/70 dark:text-amber-500/70 mt-0.5">Acertar o campeão da Copa</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60">
+                <span class="text-2xl leading-none flex-shrink-0" aria-hidden="true">🥈</span>
+                <div class="min-w-0">
+                    <p class="font-bold text-slate-700 dark:text-slate-300 text-base leading-tight">50 pontos</p>
+                    <p class="text-xs text-slate-500 mt-0.5">Acertar o vice-campeão</p>
+                </div>
+            </div>
+        </div>
+
+        @if($myGroups->isEmpty())
+            <p class="text-slate-500 text-sm text-center py-2">Entre em um bolão para fazer seus palpites de campeão.</p>
+        @else
+            {{-- Prazo com countdown --}}
+            @if(!$champLocked && $champLockDate)
+                <div id="champ-deadline-box" class="flex items-center gap-3 p-3 rounded-xl bg-amber-50 dark:bg-amber-500/5 border border-amber-200 dark:border-amber-500/20 mb-4">
+                    <span class="text-xl leading-none flex-shrink-0" aria-hidden="true">⏰</span>
+                    <div class="flex-1 min-w-0">
+                        <p id="champ-deadline-label" class="text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wide">Prazo para escolher!</p>
+                        <p class="text-xs text-amber-600/80 dark:text-amber-500/70 mt-0.5">
+                            Até {{ $champLockDate->format('d/m/Y \à\s H:i') }} (início da primeira partida)
+                        </p>
+                        <p id="champ-countdown" class="text-sm font-bold text-amber-700 dark:text-amber-400 mt-1">carregando...</p>
+                    </div>
+                </div>
+            @endif
+
+            <div class="space-y-2">
+                @foreach($myGroups as $bolao)
+                    @php $pick = $championPicks->get($bolao->id); @endphp
+                    <div class="rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/50 overflow-hidden">
+
+                        {{-- Nome do bolão --}}
+                        <div class="px-4 pt-3 pb-2">
+                            <p class="text-sm font-semibold text-slate-700 dark:text-slate-200 truncate">{{ $bolao->name }}</p>
+                        </div>
+
+                        {{-- Linha: Campeão --}}
+                        <div class="flex items-center gap-3 px-4 py-2 border-t border-slate-100 dark:border-slate-700/40">
+                            <span class="text-base leading-none flex-shrink-0" aria-hidden="true">🏆</span>
+                            <div class="flex-1 min-w-0">
+                                @if($pick)
+                                    <div class="flex flex-wrap items-center gap-1.5">
+                                        <span class="text-xs text-slate-700 dark:text-slate-300 font-medium">{{ $pick->team->flag_emoji }} {{ $pick->team->name }}</span>
+                                        @if($pick->points() > 0)
+                                            <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 px-1.5 py-0.5 rounded-md">+100 pts ✓</span>
+                                        @endif
+                                    </div>
+                                @else
+                                    <span class="text-xs text-slate-400 italic">Não escolhido</span>
+                                @endif
+                            </div>
+                            @if(!$champLocked)
+                                <button type="button"
+                                        onclick="openChampionModal({{ $bolao->id }}, '{{ addslashes($bolao->name) }}', {{ $pick?->team_id ?? 'null' }}, {{ $pick?->runner_up_team_id ?? 'null' }})"
+                                        class="flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all focus-visible:ring-2 focus-visible:ring-amber-500
+                                               {{ $pick?->team_id ? 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-amber-50 dark:hover:bg-amber-500/10 hover:text-amber-700 dark:hover:text-amber-400 border border-slate-200 dark:border-slate-600' : 'bg-amber-500 hover:bg-amber-400 text-white shadow-sm shadow-amber-500/20' }}">
+                                    {{ $pick?->team_id ? 'Alterar' : 'Escolher' }}
+                                </button>
+                            @elseif($pick?->team_id)
+                                <span class="flex-shrink-0 text-xs text-slate-400 dark:text-slate-500">Bloqueado</span>
+                            @endif
+                        </div>
+
+                        {{-- Linha: Vice --}}
+                        <div class="flex items-center gap-3 px-4 py-2 border-t border-slate-100 dark:border-slate-700/40">
+                            <span class="text-base leading-none flex-shrink-0" aria-hidden="true">🥈</span>
+                            <div class="flex-1 min-w-0">
+                                @if($pick?->runnerUp)
+                                    <div class="flex flex-wrap items-center gap-1.5">
+                                        <span class="text-xs text-slate-700 dark:text-slate-300 font-medium">{{ $pick->runnerUp->flag_emoji }} {{ $pick->runnerUp->name }}</span>
+                                        @if($pick->runnerUpPoints() > 0)
+                                            <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 px-1.5 py-0.5 rounded-md">+50 pts ✓</span>
+                                        @endif
+                                    </div>
+                                @else
+                                    <span class="text-xs text-slate-400 italic">Não escolhido</span>
+                                @endif
+                            </div>
+                            @if(!$champLocked)
+                                <button type="button"
+                                        onclick="openViceModal({{ $bolao->id }}, '{{ addslashes($bolao->name) }}', {{ $pick?->runner_up_team_id ?? 'null' }}, {{ $pick?->team_id ?? 'null' }})"
+                                        class="flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all focus-visible:ring-2 focus-visible:ring-slate-500
+                                               {{ $pick?->runner_up_team_id ? 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 border border-slate-200 dark:border-slate-600' : 'bg-slate-600 dark:bg-slate-700 hover:bg-slate-500 dark:hover:bg-slate-600 text-white shadow-sm' }}">
+                                    {{ $pick?->runner_up_team_id ? 'Alterar' : 'Escolher' }}
+                                </button>
+                            @elseif($pick?->runner_up_team_id)
+                                <span class="flex-shrink-0 text-xs text-slate-400 dark:text-slate-500">Bloqueado</span>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+    </div>
+
     {{-- Topo simplificado: Total de partidas + Progresso + Ver Grupos --}}
     @php $progress = $totalNeeded > 0 ? min(100, round(($predictedCount / $totalNeeded) * 100)) : 0; @endphp
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 animate-in stagger-1">
@@ -170,126 +295,6 @@
                             @endif
                         </div>
 
-                    </div>
-                @endforeach
-            </div>
-        @endif
-    </div>
-
-    {{-- Bônus de Campeão e Vice --}}
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 mb-8 animate-in stagger-3">
-
-        {{-- Título --}}
-        <div class="flex items-center gap-2 mb-5">
-            <span class="text-lg leading-none" aria-hidden="true">⭐</span>
-            <div class="flex-1 min-w-0">
-                <h2 class="font-semibold text-slate-800 dark:text-slate-200 text-base">Bônus de Campeão e Vice</h2>
-            </div>
-            @if(!$champLocked)
-                <span class="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 px-2.5 py-1 rounded-full">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" aria-hidden="true"></span>
-                    Aberto
-                </span>
-            @else
-                <span class="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2.5 py-1 rounded-full">
-                    🔒 Encerrado
-                </span>
-            @endif
-        </div>
-
-        {{-- Cards de bônus --}}
-        <div class="grid grid-cols-2 gap-3 mb-5">
-            <div class="flex items-center gap-3 p-4 rounded-xl bg-amber-50 dark:bg-amber-500/5 border border-amber-200 dark:border-amber-500/20">
-                <span class="text-2xl leading-none flex-shrink-0" aria-hidden="true">🏆</span>
-                <div class="min-w-0">
-                    <p class="font-bold text-amber-700 dark:text-amber-400 text-base leading-tight">100 pontos</p>
-                    <p class="text-xs text-amber-600/70 dark:text-amber-500/70 mt-0.5">Acertar o campeão da Copa</p>
-                </div>
-            </div>
-            <div class="flex items-center gap-3 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60">
-                <span class="text-2xl leading-none flex-shrink-0" aria-hidden="true">🥈</span>
-                <div class="min-w-0">
-                    <p class="font-bold text-slate-700 dark:text-slate-300 text-base leading-tight">50 pontos</p>
-                    <p class="text-xs text-slate-500 mt-0.5">Acertar o vice-campeão</p>
-                </div>
-            </div>
-        </div>
-
-        @if($myGroups->isEmpty())
-            <p class="text-slate-500 text-sm text-center py-2">Entre em um bolão para fazer seus palpites de campeão.</p>
-        @else
-            {{-- Prazo --}}
-            @if(!$champLocked && $champLockDate)
-                <p class="text-xs text-slate-500 mb-4">
-                    Prazo: até
-                    <span class="font-semibold text-slate-700 dark:text-slate-300">{{ $champLockDate->format('d/m/Y \à\s H:i') }}</span>
-                    (início da primeira partida)
-                </p>
-            @endif
-
-            <div class="space-y-2">
-                @foreach($myGroups as $bolao)
-                    @php $pick = $championPicks->get($bolao->id); @endphp
-                    <div class="rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/50 overflow-hidden">
-
-                        {{-- Nome do bolão --}}
-                        <div class="px-4 pt-3 pb-2">
-                            <p class="text-sm font-semibold text-slate-700 dark:text-slate-200 truncate">{{ $bolao->name }}</p>
-                        </div>
-
-                        {{-- Linha: Campeão --}}
-                        <div class="flex items-center gap-3 px-4 py-2 border-t border-slate-100 dark:border-slate-700/40">
-                            <span class="text-base leading-none flex-shrink-0" aria-hidden="true">🏆</span>
-                            <div class="flex-1 min-w-0">
-                                @if($pick)
-                                    <div class="flex flex-wrap items-center gap-1.5">
-                                        <span class="text-xs text-slate-700 dark:text-slate-300 font-medium">{{ $pick->team->flag_emoji }} {{ $pick->team->name }}</span>
-                                        @if($pick->points() > 0)
-                                            <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 px-1.5 py-0.5 rounded-md">+100 pts ✓</span>
-                                        @endif
-                                    </div>
-                                @else
-                                    <span class="text-xs text-slate-400 italic">Não escolhido</span>
-                                @endif
-                            </div>
-                            @if(!$champLocked)
-                                <button type="button"
-                                        onclick="openChampionModal({{ $bolao->id }}, '{{ addslashes($bolao->name) }}', {{ $pick?->team_id ?? 'null' }}, {{ $pick?->runner_up_team_id ?? 'null' }})"
-                                        class="flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all focus-visible:ring-2 focus-visible:ring-amber-500
-                                               {{ $pick?->team_id ? 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-amber-50 dark:hover:bg-amber-500/10 hover:text-amber-700 dark:hover:text-amber-400 border border-slate-200 dark:border-slate-600' : 'bg-amber-500 hover:bg-amber-400 text-white shadow-sm shadow-amber-500/20' }}">
-                                    {{ $pick?->team_id ? 'Alterar' : 'Escolher' }}
-                                </button>
-                            @elseif($pick?->team_id)
-                                <span class="flex-shrink-0 text-xs text-slate-400 dark:text-slate-500">Bloqueado</span>
-                            @endif
-                        </div>
-
-                        {{-- Linha: Vice --}}
-                        <div class="flex items-center gap-3 px-4 py-2 border-t border-slate-100 dark:border-slate-700/40">
-                            <span class="text-base leading-none flex-shrink-0" aria-hidden="true">🥈</span>
-                            <div class="flex-1 min-w-0">
-                                @if($pick?->runnerUp)
-                                    <div class="flex flex-wrap items-center gap-1.5">
-                                        <span class="text-xs text-slate-700 dark:text-slate-300 font-medium">{{ $pick->runnerUp->flag_emoji }} {{ $pick->runnerUp->name }}</span>
-                                        @if($pick->runnerUpPoints() > 0)
-                                            <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 px-1.5 py-0.5 rounded-md">+50 pts ✓</span>
-                                        @endif
-                                    </div>
-                                @else
-                                    <span class="text-xs text-slate-400 italic">Não escolhido</span>
-                                @endif
-                            </div>
-                            @if(!$champLocked)
-                                <button type="button"
-                                        onclick="openViceModal({{ $bolao->id }}, '{{ addslashes($bolao->name) }}', {{ $pick?->runner_up_team_id ?? 'null' }}, {{ $pick?->team_id ?? 'null' }})"
-                                        class="flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all focus-visible:ring-2 focus-visible:ring-slate-500
-                                               {{ $pick?->runner_up_team_id ? 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 border border-slate-200 dark:border-slate-600' : 'bg-slate-600 dark:bg-slate-700 hover:bg-slate-500 dark:hover:bg-slate-600 text-white shadow-sm' }}">
-                                    {{ $pick?->runner_up_team_id ? 'Alterar' : 'Escolher' }}
-                                </button>
-                            @elseif($pick?->runner_up_team_id)
-                                <span class="flex-shrink-0 text-xs text-slate-400 dark:text-slate-500">Bloqueado</span>
-                            @endif
-                        </div>
                     </div>
                 @endforeach
             </div>
@@ -550,5 +555,49 @@
             Inserir resultados dos jogos
         </a>
     </div>
+    @endif
+
+    @if(!$champLocked && $champLockDate)
+    <script>
+    (function () {
+        var deadline = new Date("{{ $champLockDate->toIso8601String() }}");
+        var box   = document.getElementById('champ-deadline-box');
+        var label = document.getElementById('champ-deadline-label');
+        var el    = document.getElementById('champ-countdown');
+        var urgentClasses  = ['bg-red-50','dark:bg-red-500/5','border-red-200','dark:border-red-500/20'];
+        var warningClasses = ['bg-amber-50','dark:bg-amber-500/5','border-amber-200','dark:border-amber-500/20'];
+
+        function applyUrgency(isUrgent) {
+            if (!box) return;
+            var add = isUrgent ? urgentClasses : warningClasses;
+            var rem = isUrgent ? warningClasses : urgentClasses;
+            rem.forEach(function(c){ box.classList.remove(c); });
+            add.forEach(function(c){ box.classList.add(c); });
+            var textColor = isUrgent ? ['text-red-700','dark:text-red-400'] : ['text-amber-700','dark:text-amber-400'];
+            if (label) { label.className = 'text-xs font-semibold uppercase tracking-wide ' + textColor.join(' '); }
+            if (el)    { el.className    = 'text-sm font-bold mt-1 ' + textColor.join(' '); }
+        }
+
+        function tick() {
+            var diff = deadline - new Date();
+            if (!el) return;
+            if (diff <= 0) {
+                el.textContent = 'Prazo encerrado!';
+                if (label) label.textContent = 'Prazo encerrado!';
+                return;
+            }
+            var isUrgent = diff < 86400000; // menos de 24h
+            applyUrgency(isUrgent);
+            if (label) label.textContent = isUrgent ? 'Corra! Prazo encerrando!' : 'Prazo para escolher!';
+            var d = Math.floor(diff / 86400000);
+            var h = Math.floor((diff % 86400000) / 3600000);
+            var m = Math.floor((diff % 3600000) / 60000);
+            var s = Math.floor((diff % 60000) / 1000);
+            el.textContent = (d > 0 ? d + 'd ' : '') + h + 'h ' + m + 'm ' + s + 's restantes';
+            setTimeout(tick, 1000);
+        }
+        tick();
+    })();
+    </script>
     @endif
 @endsection
