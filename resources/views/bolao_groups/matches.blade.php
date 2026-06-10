@@ -150,9 +150,10 @@
                     @csrf
 
                     {{-- Time da casa --}}
-                    <div class="flex items-center gap-2.5 flex-1 min-w-0 justify-end">
+                    <div class="flex flex-col sm:flex-row items-center gap-1 sm:gap-2.5 flex-1 min-w-0 sm:justify-end">
                         <span class="font-semibold text-slate-700 dark:text-slate-200 text-sm truncate hidden sm:inline">{{ $match->homeTeam->name }}</span>
                         <span class="text-2xl leading-none flex-shrink-0" aria-hidden="true">{{ $match->homeTeam->flag_emoji }}</span>
+                        <span class="sm:hidden text-xs font-semibold text-slate-600 dark:text-slate-400 text-center leading-tight">{{ $match->homeTeam->code }}</span>
                     </div>
 
                     {{-- Inputs de placar --}}
@@ -185,9 +186,10 @@
                     </div>
 
                     {{-- Time visitante --}}
-                    <div class="flex items-center gap-2.5 flex-1 min-w-0">
+                    <div class="flex flex-col sm:flex-row items-center gap-1 sm:gap-2.5 flex-1 min-w-0">
                         <span class="text-2xl leading-none flex-shrink-0" aria-hidden="true">{{ $match->awayTeam->flag_emoji }}</span>
                         <span class="font-semibold text-slate-700 dark:text-slate-200 text-sm truncate hidden sm:inline">{{ $match->awayTeam->name }}</span>
+                        <span class="sm:hidden text-xs font-semibold text-slate-600 dark:text-slate-400 text-center leading-tight">{{ $match->awayTeam->code }}</span>
                     </div>
 
                     {{-- Botão salvar --}}
