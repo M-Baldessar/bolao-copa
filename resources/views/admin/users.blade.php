@@ -110,7 +110,9 @@
                         <td class="px-5 py-3 text-right">
                             @if(!$user->is_admin && $user->id !== auth()->id())
                             <button type="button"
-                                    onclick="confirmDelete('{{ route('admin.users.destroy', $user) }}', '{{ addslashes($user->displayName()) }}')"
+                                    data-url="{{ route('admin.users.destroy', $user) }}"
+                                    data-name="{{ $user->displayName() }}"
+                                    onclick="confirmDelete(this)"
                                     class="text-xs text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors">
                                 Deletar
                             </button>
@@ -179,9 +181,9 @@
 </div>
 
 <script>
-function confirmDelete(url, name) {
-    document.getElementById('delete-modal-name').textContent = name;
-    document.getElementById('delete-modal-form').action = url;
+function confirmDelete(btn) {
+    document.getElementById('delete-modal-name').textContent = btn.dataset.name;
+    document.getElementById('delete-modal-form').action = btn.dataset.url;
     document.getElementById('delete-modal').classList.remove('hidden');
 }
 

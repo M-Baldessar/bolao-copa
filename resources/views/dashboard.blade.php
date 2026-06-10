@@ -105,7 +105,11 @@
                             </div>
                             @if(!$champLocked)
                                 <button type="button"
-                                        onclick="openChampionModal({{ $bolao->id }}, '{{ addslashes($bolao->name) }}', {{ $pick?->team_id ?? 'null' }}, {{ $pick?->runner_up_team_id ?? 'null' }})"
+                                        data-bolao-id="{{ $bolao->id }}"
+                                        data-bolao-name="{{ $bolao->name }}"
+                                        data-team-id="{{ $pick?->team_id ?? '' }}"
+                                        data-runner-up-id="{{ $pick?->runner_up_team_id ?? '' }}"
+                                        onclick="openChampionModal(this)"
                                         class="flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all focus-visible:ring-2 focus-visible:ring-amber-500
                                                {{ $pick?->team_id ? 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-amber-50 dark:hover:bg-amber-500/10 hover:text-amber-700 dark:hover:text-amber-400 border border-slate-200 dark:border-slate-600' : 'bg-amber-500 hover:bg-amber-400 text-white shadow-sm shadow-amber-500/20' }}">
                                     {{ $pick?->team_id ? 'Alterar' : 'Escolher' }}
@@ -132,7 +136,11 @@
                             </div>
                             @if(!$champLocked)
                                 <button type="button"
-                                        onclick="openViceModal({{ $bolao->id }}, '{{ addslashes($bolao->name) }}', {{ $pick?->runner_up_team_id ?? 'null' }}, {{ $pick?->team_id ?? 'null' }})"
+                                        data-bolao-id="{{ $bolao->id }}"
+                                        data-bolao-name="{{ $bolao->name }}"
+                                        data-runner-up-id="{{ $pick?->runner_up_team_id ?? '' }}"
+                                        data-team-id="{{ $pick?->team_id ?? '' }}"
+                                        onclick="openViceModal(this)"
                                         class="flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all focus-visible:ring-2 focus-visible:ring-slate-500
                                                {{ $pick?->runner_up_team_id ? 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 border border-slate-200 dark:border-slate-600' : 'bg-slate-600 dark:bg-slate-700 hover:bg-slate-500 dark:hover:bg-slate-600 text-white shadow-sm' }}">
                                     {{ $pick?->runner_up_team_id ? 'Alterar' : 'Escolher' }}
@@ -476,7 +484,11 @@
     </div>
 
     <script>
-        function openChampionModal(bolaoGroupId, bolaoGroupName, currentTeamId, currentRunnerUpTeamId) {
+        function openChampionModal(btn) {
+            var bolaoGroupId = btn.dataset.bolaoId;
+            var bolaoGroupName = btn.dataset.bolaoName;
+            var currentTeamId = btn.dataset.teamId || null;
+            var currentRunnerUpTeamId = btn.dataset.runnerUpId || null;
             document.getElementById('champion-bolao-id').value = bolaoGroupId;
             document.getElementById('champion-modal-group-name').textContent = 'Bolão: ' + bolaoGroupName;
             document.getElementById('champion-form-runner-up-id').value = currentRunnerUpTeamId || '';
@@ -503,7 +515,11 @@
             document.body.style.overflow = '';
         }
 
-        function openViceModal(bolaoGroupId, bolaoGroupName, currentRunnerUpTeamId, currentTeamId) {
+        function openViceModal(btn) {
+            var bolaoGroupId = btn.dataset.bolaoId;
+            var bolaoGroupName = btn.dataset.bolaoName;
+            var currentRunnerUpTeamId = btn.dataset.runnerUpId || null;
+            var currentTeamId = btn.dataset.teamId || null;
             document.getElementById('vice-bolao-id').value = bolaoGroupId;
             document.getElementById('vice-modal-group-name').textContent = 'Bolão: ' + bolaoGroupName;
             document.getElementById('vice-form-champion-id').value = currentTeamId || '';
