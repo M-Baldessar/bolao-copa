@@ -34,13 +34,15 @@ class BolaoGroupController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:60',
+            'name'        => 'required|string|max:60',
+            'description' => 'nullable|string|max:2000',
         ]);
 
         $group = BolaoGroup::create([
-            'name'     => $request->name,
-            'code'     => BolaoGroup::generateCode(),
-            'owner_id' => auth()->id(),
+            'name'        => $request->name,
+            'description' => $request->description,
+            'code'        => BolaoGroup::generateCode(),
+            'owner_id'    => auth()->id(),
         ]);
 
         // Owner entra automaticamente como membro
@@ -48,6 +50,21 @@ class BolaoGroupController extends Controller
 
         return redirect()->route('bolao.show', $group)
             ->with('success', 'Grupo "' . $group->name . '" criado com sucesso! Código: ' . $group->code);
+    }
+
+    public function updateDescription(Request $request, BolaoGroup $bolaoGroup)
+    {
+        if ($bolaoGroup->owner_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $request->validate([
+            'description' => 'nullable|string|max:2000',
+        ]);
+
+        $bolaoGroup->update(['description' => $request->description]);
+
+        return back()->with('success', 'Regras do grupo atualizadas.');
     }
 
     public function show(BolaoGroup $bolaoGroup)

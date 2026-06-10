@@ -48,6 +48,58 @@
             </div>
         </div>
 
+        {{-- Descrição / Regras --}}
+        @if($bolaoGroup->owner_id === auth()->id())
+            <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <div class="flex items-center justify-between mb-2">
+                    <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Regras do grupo</p>
+                    <button type="button" onclick="toggleDescriptionForm()"
+                        class="text-xs text-emerald-600 dark:text-emerald-400 hover:underline focus-visible:ring-2 focus-visible:ring-emerald-500 rounded">
+                        <span id="desc-btn-label">{{ $bolaoGroup->description ? 'Editar' : 'Adicionar regras' }}</span>
+                    </button>
+                </div>
+
+                {{-- Texto atual (visível por padrão) --}}
+                <div id="desc-display">
+                    @if($bolaoGroup->description)
+                        <p class="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-line leading-relaxed">{{ $bolaoGroup->description }}</p>
+                    @else
+                        <p class="text-sm text-slate-400 italic">Nenhuma regra definida ainda.</p>
+                    @endif
+                </div>
+
+                {{-- Formulário de edição (oculto por padrão) --}}
+                <form id="desc-form" class="hidden mt-2" action="{{ route('bolao.description', $bolaoGroup) }}" method="POST">
+                    @csrf @method('PATCH')
+                    <textarea
+                        name="description"
+                        rows="6"
+                        maxlength="2000"
+                        placeholder="Descreva as regras, critérios de desempate, premiações..."
+                        class="w-full bg-white dark:bg-slate-800/60 border border-slate-300 dark:border-slate-700/80 rounded-xl px-4 py-3 text-slate-800 dark:text-slate-100 text-sm placeholder:text-slate-400 dark:placeholder:text-slate-500 resize-y focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all"
+                    >{{ old('description', $bolaoGroup->description) }}</textarea>
+                    @error('description')
+                        <p class="text-red-600 dark:text-red-400 text-xs mt-1.5">{{ $message }}</p>
+                    @enderror
+                    <div class="flex gap-2 mt-2">
+                        <button type="submit"
+                            class="bg-emerald-600 dark:bg-emerald-500 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-all focus-visible:ring-2 focus-visible:ring-emerald-500">
+                            Salvar
+                        </button>
+                        <button type="button" onclick="toggleDescriptionForm()"
+                            class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 text-xs font-semibold px-4 py-2 rounded-lg transition-all">
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        @elseif($bolaoGroup->description)
+            <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Regras do grupo</p>
+                <p class="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-line leading-relaxed">{{ $bolaoGroup->description }}</p>
+            </div>
+        @endif
+
         {{-- CTA palpites --}}
         <div class="mt-5 pt-5 border-t border-slate-100 dark:border-slate-800 flex flex-wrap gap-2">
             <a href="{{ route('bolao.matches', $bolaoGroup) }}"
@@ -170,4 +222,21 @@
     </div>
 
 </div>
+@if($bolaoGroup->owner_id === auth()->id())
+<script>
+function toggleDescriptionForm() {
+    var form    = document.getElementById('desc-form');
+    var display = document.getElementById('desc-display');
+    var label   = document.getElementById('desc-btn-label');
+    var hidden  = form.classList.contains('hidden');
+    form.classList.toggle('hidden', !hidden);
+    display.classList.toggle('hidden', hidden);
+    label.textContent = hidden ? 'Cancelar' : '{{ $bolaoGroup->description ? "Editar" : "Adicionar regras" }}';
+}
+@if($errors->has('description'))
+document.addEventListener('DOMContentLoaded', function () { toggleDescriptionForm(); });
+@endif
+</script>
+@endif
+
 @endsection

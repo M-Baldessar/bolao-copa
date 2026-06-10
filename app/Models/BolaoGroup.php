@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 
 class BolaoGroup extends Model
 {
-    protected $fillable = ['name', 'code', 'owner_id'];
+    protected $fillable = ['name', 'description', 'code', 'owner_id'];
 
     public static function generateCode(): string
     {

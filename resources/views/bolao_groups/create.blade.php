@@ -40,6 +40,25 @@
                 @enderror
             </div>
 
+            <div class="mb-5">
+                <label for="description" class="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                    Regras do grupo <span class="normal-case font-normal text-slate-400">(opcional)</span>
+                </label>
+                <textarea
+                    id="description"
+                    name="description"
+                    rows="5"
+                    maxlength="2000"
+                    placeholder="Descreva as regras, critérios de desempate, premiações..."
+                    class="w-full bg-white dark:bg-slate-800/60 border rounded-xl px-4 py-3 text-slate-800 dark:text-slate-100 text-sm placeholder:text-slate-400 dark:placeholder:text-slate-500 resize-y
+                           focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all
+                           {{ $errors->has('description') ? 'border-red-400 bg-red-50 dark:border-red-500/50 dark:bg-red-500/5' : 'border-slate-300 dark:border-slate-700/80 hover:border-slate-400 dark:hover:border-slate-600' }}"
+                >{{ old('description') }}</textarea>
+                @error('description')
+                    <p class="text-red-600 dark:text-red-400 text-xs mt-1.5">{{ $message }}</p>
+                @enderror
+            </div>
+
             <div class="bg-emerald-50 dark:bg-emerald-500/5 border border-emerald-200 dark:border-emerald-500/15 rounded-xl p-4 mb-5 flex items-start gap-3">
                 <div class="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 flex items-center justify-center flex-shrink-0 mt-0.5" aria-hidden="true">
                     <svg class="w-4 h-4 text-emerald-700 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
