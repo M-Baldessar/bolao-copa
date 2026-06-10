@@ -70,7 +70,8 @@
                         <th class="px-5 py-3 text-left">Usuário</th>
                         <th class="px-5 py-3 text-left hidden sm:table-cell">E-mail</th>
                         <th class="px-5 py-3 text-center">Palpites</th>
-                        <th class="px-5 py-3 text-right">Cadastro</th>
+                        <th class="px-5 py-3 text-right hidden sm:table-cell">Cadastro</th>
+                        <th class="px-5 py-3 text-right"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -103,8 +104,17 @@
                                 {{ $count }}/{{ $totalGroupMatches }}
                             </span>
                         </td>
-                        <td class="px-5 py-3 text-right text-slate-500 dark:text-slate-400 whitespace-nowrap text-xs tabular-nums">
+                        <td class="px-5 py-3 text-right text-slate-500 dark:text-slate-400 whitespace-nowrap text-xs tabular-nums hidden sm:table-cell">
                             {{ $user->created_at->format('d/m/Y H:i') }}
+                        </td>
+                        <td class="px-5 py-3 text-right">
+                            @if(!$user->is_admin && $user->id !== auth()->id())
+                            <button type="button"
+                                    onclick="confirmDelete('{{ route('admin.users.destroy', $user) }}', '{{ addslashes($user->displayName()) }}')"
+                                    class="text-xs text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors">
+                                Deletar
+                            </button>
+                            @endif
                         </td>
                     </tr>
                     @endforeach
@@ -143,7 +153,42 @@
 
 </div>
 
+{{-- Modal de confirmação de delete --}}
+<div id="delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeDeleteModal()"></div>
+    <div class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl p-6 w-full max-w-sm">
+        <h3 class="font-display font-bold text-slate-900 dark:text-white text-lg">Deletar usuário?</h3>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            Tem certeza que deseja remover <strong id="delete-modal-name" class="text-slate-800 dark:text-slate-200"></strong>?
+            Esta ação não pode ser desfeita.
+        </p>
+        <form id="delete-modal-form" method="POST" class="flex gap-3 mt-6 justify-end">
+            @csrf
+            @method('DELETE')
+            <button type="button" onclick="closeDeleteModal()"
+                    class="px-4 py-2 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                Cancelar
+            </button>
+            <button type="submit"
+                    class="px-4 py-2 rounded-xl text-sm font-semibold transition"
+                    style="background-color:#ef4444;color:#fff;">
+                Deletar
+            </button>
+        </form>
+    </div>
+</div>
+
 <script>
+function confirmDelete(url, name) {
+    document.getElementById('delete-modal-name').textContent = name;
+    document.getElementById('delete-modal-form').action = url;
+    document.getElementById('delete-modal').classList.remove('hidden');
+}
+
+function closeDeleteModal() {
+    document.getElementById('delete-modal').classList.add('hidden');
+}
+
 (function () {
     var statsUrl = '{{ route('admin.users.stats') }}';
 

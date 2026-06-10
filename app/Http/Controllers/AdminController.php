@@ -81,6 +81,21 @@ class AdminController extends Controller
         ];
     }
 
+    public function destroyUser(User $user)
+    {
+        if ($user->is_admin) {
+            return back()->withErrors(['delete' => 'Não é possível deletar um administrador.']);
+        }
+
+        if ($user->id === auth()->id()) {
+            return back()->withErrors(['delete' => 'Você não pode deletar sua própria conta.']);
+        }
+
+        $user->delete();
+
+        return back()->with('success', 'Usuário "' . $user->displayName() . '" removido.');
+    }
+
     public function createKnockout()
     {
         $teams = Team::with('group')->orderBy('name')->get();

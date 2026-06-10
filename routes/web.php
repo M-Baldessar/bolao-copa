@@ -66,5 +66,6 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/usuarios', [AdminController::class, 'users'])->name('admin.users');
         Route::get('/usuarios/stats', [AdminController::class, 'userStats'])->name('admin.users.stats');
+        Route::delete('/usuarios/{user}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');
     });
 });
