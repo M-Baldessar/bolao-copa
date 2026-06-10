@@ -93,10 +93,14 @@
                     </div>
                 </form>
             </div>
-        @elseif($bolaoGroup->description)
+        @else
             <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
                 <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Regras do grupo</p>
-                <p class="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-line leading-relaxed">{{ $bolaoGroup->description }}</p>
+                @if($bolaoGroup->description)
+                    <p class="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-line leading-relaxed">{{ $bolaoGroup->description }}</p>
+                @else
+                    <p class="text-sm text-slate-400 italic">Nenhuma regra definida ainda.</p>
+                @endif
             </div>
         @endif
 
