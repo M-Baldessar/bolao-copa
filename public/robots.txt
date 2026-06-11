@@ -7,3 +7,5 @@ Disallow: /partidas
 Disallow: /meus-palpites
 Disallow: /bolao
 Disallow: /admin
+
+Sitemap: https://bolao.matheusbaldessar.com.br/sitemap.xml

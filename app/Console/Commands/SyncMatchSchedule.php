@@ -36,12 +36,8 @@ class SyncMatchSchedule extends Command
      * Chave = código da API, Valor = código no TeamSeeder.
      */
     private array $codeAliases = [
-        'CZE' => 'REP', // República Tcheca
-        'BIH' => 'BOS', // Bósnia
         'SAU' => 'KSA', // Arábia Saudita
         'DZA' => 'ALG', // Argélia
-        'CIV' => 'CIV', // Costa do Marfim (igual)
-        'URY' => 'URU', // Uruguai
     ];
 
     public function handle(): int

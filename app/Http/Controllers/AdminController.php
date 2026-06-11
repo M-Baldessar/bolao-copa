@@ -39,12 +39,21 @@ class AdminController extends Controller
 
         $match->update($data);
 
+        if ($match->group_id) {
+            $this->recalculateGroupStandings($match->group_id);
+        }
+
         return back()->with('success', 'Resultado da partida #' . $match->match_number . ' atualizado!');
     }
 
     public function clearResult(GameMatch $match)
     {
+        $groupId = $match->group_id;
         $match->update(['home_score' => null, 'away_score' => null]);
+
+        if ($groupId) {
+            $this->recalculateGroupStandings($groupId);
+        }
 
         return back()->with('success', 'Resultado da partida #' . $match->match_number . ' removido.');
     }
@@ -67,6 +76,61 @@ class AdminController extends Controller
     public function userStats()
     {
         return response()->json($this->buildUserStats());
+    }
+
+    private function recalculateGroupStandings(int $groupId): void
+    {
+        $teams = Team::where('group_id', $groupId)->get();
+
+        $stats = [];
+        foreach ($teams as $team) {
+            $stats[$team->id] = [
+                'played' => 0, 'won' => 0, 'drawn' => 0, 'lost' => 0,
+                'goals_for' => 0, 'goals_against' => 0, 'points' => 0,
+            ];
+        }
+
+        $matches = GameMatch::where('group_id', $groupId)
+            ->whereNotNull('home_score')
+            ->whereNotNull('away_score')
+            ->get();
+
+        foreach ($matches as $m) {
+            $h = $m->home_team_id;
+            $a = $m->away_team_id;
+
+            if (! isset($stats[$h], $stats[$a])) continue;
+
+            $stats[$h]['played']++;
+            $stats[$a]['played']++;
+            $stats[$h]['goals_for']     += $m->home_score;
+            $stats[$h]['goals_against'] += $m->away_score;
+            $stats[$a]['goals_for']     += $m->away_score;
+            $stats[$a]['goals_against'] += $m->home_score;
+
+            if ($m->home_score > $m->away_score) {
+                $stats[$h]['won']++;    $stats[$h]['points'] += 3;
+                $stats[$a]['lost']++;
+            } elseif ($m->home_score < $m->away_score) {
+                $stats[$a]['won']++;    $stats[$a]['points'] += 3;
+                $stats[$h]['lost']++;
+            } else {
+                $stats[$h]['drawn']++;  $stats[$h]['points']++;
+                $stats[$a]['drawn']++;  $stats[$a]['points']++;
+            }
+        }
+
+        // Ordenar: pontos → saldo de gols → gols marcados
+        $sorted = collect($stats)->sortByDesc(fn($s, $id) =>
+            [$s['points'], $s['goals_for'] - $s['goals_against'], $s['goals_for']]
+        )->keys()->values();
+
+        foreach ($teams as $team) {
+            $s = $stats[$team->id];
+            $team->update(array_merge($s, [
+                'position' => $sorted->search($team->id) + 1,
+            ]));
+        }
     }
 
     private function buildUserStats(): array

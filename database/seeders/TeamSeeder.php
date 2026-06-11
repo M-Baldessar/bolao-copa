@@ -15,18 +15,18 @@ class TeamSeeder extends Seeder
                 ['name' => 'México',              'code' => 'MEX', 'flag_emoji' => '🇲🇽', 'strength' => 78],
                 ['name' => 'África do Sul',        'code' => 'RSA', 'flag_emoji' => '🇿🇦', 'strength' => 53],
                 ['name' => 'Coreia do Sul',        'code' => 'KOR', 'flag_emoji' => '🇰🇷', 'strength' => 72],
-                ['name' => 'República Tcheca',     'code' => 'REP', 'flag_emoji' => '🇨🇿', 'strength' => 67],
+                ['name' => 'República Tcheca',     'code' => 'CZE', 'flag_emoji' => '🇨🇿', 'strength' => 67],
             ],
             'B' => [
                 ['name' => 'Canadá',               'code' => 'CAN', 'flag_emoji' => '🇨🇦', 'strength' => 74],
-                ['name' => 'Bósnia e Herzegovina', 'code' => 'BOS', 'flag_emoji' => '🇧🇦', 'strength' => 60],
+                ['name' => 'Bósnia e Herzegovina', 'code' => 'BIH', 'flag_emoji' => '🇧🇦', 'strength' => 60],
                 ['name' => 'Catar',                'code' => 'QAT', 'flag_emoji' => '🇶🇦', 'strength' => 54],
                 ['name' => 'Suíça',                'code' => 'SUI', 'flag_emoji' => '🇨🇭', 'strength' => 78],
             ],
             'C' => [
                 ['name' => 'Brasil',               'code' => 'BRA', 'flag_emoji' => '🇧🇷', 'strength' => 91],
                 ['name' => 'Marrocos',             'code' => 'MAR', 'flag_emoji' => '🇲🇦', 'strength' => 76],
-                ['name' => 'Haiti',                'code' => 'HTI', 'flag_emoji' => '🇭🇹', 'strength' => 42],
+                ['name' => 'Haiti',                'code' => 'HAI', 'flag_emoji' => '🇭🇹', 'strength' => 42],
                 ['name' => 'Escócia',              'code' => 'SCO', 'flag_emoji' => '🏴󠁧󠁢󠁳󠁣󠁴󠁿', 'strength' => 68],
             ],
             'D' => [
@@ -57,7 +57,7 @@ class TeamSeeder extends Seeder
                 ['name' => 'Espanha',              'code' => 'ESP', 'flag_emoji' => '🇪🇸', 'strength' => 90],
                 ['name' => 'Cabo Verde',           'code' => 'CPV', 'flag_emoji' => '🇨🇻', 'strength' => 53],
                 ['name' => 'Arábia Saudita',       'code' => 'KSA', 'flag_emoji' => '🇸🇦', 'strength' => 60],
-                ['name' => 'Uruguai',              'code' => 'URU', 'flag_emoji' => '🇺🇾', 'strength' => 80],
+                ['name' => 'Uruguai',              'code' => 'URY', 'flag_emoji' => '🇺🇾', 'strength' => 80],
             ],
             'I' => [
                 ['name' => 'França',               'code' => 'FRA', 'flag_emoji' => '🇫🇷', 'strength' => 90],

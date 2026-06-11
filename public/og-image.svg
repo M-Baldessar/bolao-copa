@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!-- Fundo escuro gradiente -->
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1e293b;stop-opacity:1" />
+    </linearGradient>
+    <!-- Grade de fundo -->
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(16,185,129,0.08)" stroke-width="1"/>
+    </pattern>
+    <!-- Glow verde -->
+    <radialGradient id="glow-green" cx="20%" cy="50%" r="60%">
+      <stop offset="0%" style="stop-color:rgba(16,185,129,0.15);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:rgba(16,185,129,0);stop-opacity:1" />
+    </radialGradient>
+    <!-- Glow âmbar -->
+    <radialGradient id="glow-amber" cx="80%" cy="30%" r="40%">
+      <stop offset="0%" style="stop-color:rgba(245,158,11,0.10);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:rgba(245,158,11,0);stop-opacity:1" />
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <rect width="1200" height="630" fill="url(#glow-green)"/>
+  <rect width="1200" height="630" fill="url(#glow-amber)"/>
+
+  <!-- Borda superior verde -->
+  <rect width="1200" height="4" fill="#10b981"/>
+
+  <!-- Ícone bola de futebol (círculo com estrela) -->
+  <circle cx="160" cy="260" r="70" fill="rgba(16,185,129,0.10)" stroke="rgba(16,185,129,0.30)" stroke-width="2"/>
+  <text x="160" y="282" font-size="72" text-anchor="middle" font-family="Arial, sans-serif">⚽</text>
+
+  <!-- Badge Copa -->
+  <rect x="240" y="175" width="310" height="36" rx="18" fill="rgba(245,158,11,0.15)" stroke="rgba(245,158,11,0.30)" stroke-width="1"/>
+  <text x="395" y="199" font-size="14" font-weight="600" text-anchor="middle" fill="#fbbf24" font-family="Arial, sans-serif" letter-spacing="2">🏆  FIFA WORLD CUP 2026</text>
+
+  <!-- Título principal -->
+  <text x="240" y="280" font-size="72" font-weight="900" fill="white" font-family="Arial Black, Arial, sans-serif" letter-spacing="-2">O BOLÃO MAIS</text>
+  <text x="240" y="360" font-size="72" font-weight="900" fill="#10b981" font-family="Arial Black, Arial, sans-serif" letter-spacing="-2">EMOCIONANTE</text>
+  <text x="240" y="440" font-size="72" font-weight="900" fill="white" font-family="Arial Black, Arial, sans-serif" letter-spacing="-2">DA COPA!</text>
+
+  <!-- Subtítulo -->
+  <text x="240" y="490" font-size="22" fill="#94a3b8" font-family="Arial, sans-serif">Palpites · Grupos · Ranking em tempo real</text>
+
+  <!-- Divisor -->
+  <line x1="240" y1="520" x2="760" y2="520" stroke="rgba(148,163,184,0.20)" stroke-width="1"/>
+
+  <!-- URL do site -->
+  <text x="240" y="550" font-size="18" fill="#64748b" font-family="Arial, sans-serif">bolao.matheusbaldessar.tech</text>
+
+  <!-- Feature pills (lado direito) -->
+  <rect x="820" y="220" width="290" height="60" rx="12" fill="rgba(16,185,129,0.08)" stroke="rgba(16,185,129,0.20)" stroke-width="1"/>
+  <text x="965" y="248" font-size="14" font-weight="600" text-anchor="middle" fill="#34d399" font-family="Arial, sans-serif">👨‍👩‍👧‍👦  Jogue em família</text>
+  <text x="965" y="268" font-size="13" text-anchor="middle" fill="#64748b" font-family="Arial, sans-serif">Grupo privado com código</text>
+
+  <rect x="820" y="300" width="290" height="60" rx="12" fill="rgba(59,130,246,0.08)" stroke="rgba(59,130,246,0.20)" stroke-width="1"/>
+  <text x="965" y="328" font-size="14" font-weight="600" text-anchor="middle" fill="#60a5fa" font-family="Arial, sans-serif">🏢  Bolão do trabalho</text>
+  <text x="965" y="348" font-size="13" text-anchor="middle" fill="#64748b" font-family="Arial, sans-serif">Desafie o escritório todo</text>
+
+  <rect x="820" y="380" width="290" height="60" rx="12" fill="rgba(245,158,11,0.08)" stroke="rgba(245,158,11,0.20)" stroke-width="1"/>
+  <text x="965" y="408" font-size="14" font-weight="600" text-anchor="middle" fill="#fbbf24" font-family="Arial, sans-serif">🎯  Pontuação detalhada</text>
+  <text x="965" y="428" font-size="13" text-anchor="middle" fill="#64748b" font-family="Arial, sans-serif">Placar exato · Vencedor · Empate</text>
+
+  <rect x="820" y="460" width="290" height="60" rx="12" fill="rgba(168,85,247,0.08)" stroke="rgba(168,85,247,0.20)" stroke-width="1"/>
+  <text x="965" y="488" font-size="14" font-weight="600" text-anchor="middle" fill="#c084fc" font-family="Arial, sans-serif">📊  Ranking em tempo real</text>
+  <text x="965" y="508" font-size="13" text-anchor="middle" fill="#64748b" font-family="Arial, sans-serif">Acompanhe a cada jogo</text>
+
+  <!-- Tag Gratuito -->
+  <rect x="820" y="160" width="110" height="32" rx="16" fill="rgba(16,185,129,0.10)" stroke="rgba(16,185,129,0.25)" stroke-width="1"/>
+  <text x="875" y="181" font-size="13" font-weight="600" text-anchor="middle" fill="#34d399" font-family="Arial, sans-serif">✓  Gratuito</text>
+
+  <rect x="944" y="160" width="164" height="32" rx="16" fill="rgba(16,185,129,0.10)" stroke="rgba(16,185,129,0.25)" stroke-width="1"/>
+  <text x="1026" y="181" font-size="13" font-weight="600" text-anchor="middle" fill="#34d399" font-family="Arial, sans-serif">✓  Fácil de usar</text>
+</svg>

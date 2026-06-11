@@ -23,10 +23,11 @@
                        hover:bg-emerald-700 dark:hover:bg-emerald-400
                        focus-visible:ring-2 focus-visible:ring-emerald-500
                        disabled:opacity-50 disabled:cursor-not-allowed">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <svg class="w-4 h-4 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
             </svg>
-            Salvar todos
+            <span class="hidden sm:inline">Salvar todos</span>
+            <span class="sm:hidden">Salvar Todos</span>
         </button>
 
         {{-- Preencher automaticamente --}}
@@ -35,11 +36,25 @@
                        text-slate-700 dark:text-slate-300
                        hover:bg-emerald-50 dark:hover:bg-emerald-500/10 hover:border-emerald-300 dark:hover:border-emerald-500/40 hover:text-emerald-700 dark:hover:text-emerald-400
                        focus-visible:ring-2 focus-visible:ring-emerald-500">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <svg class="w-4 h-4 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
             </svg>
-            <span class="hidden sm:inline">Gerar resultados</span>
-            <span class="sm:hidden">Auto</span>
+            <span class="hidden sm:inline">Gerar placares Automáticos</span>
+            <span class="sm:hidden">Gerador Palpites</span>
+        </button>
+
+        {{-- Exportar para outros grupos --}}
+        <button type="button" onclick="openExportModal()" id="btn-export"
+                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all
+                       bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700
+                       text-slate-700 dark:text-slate-300
+                       hover:bg-blue-50 dark:hover:bg-blue-500/10 hover:border-blue-300 dark:hover:border-blue-500/40 hover:text-blue-700 dark:hover:text-blue-400
+                       focus-visible:ring-2 focus-visible:ring-blue-500">
+            <svg class="w-4 h-4 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+            </svg>
+            <span class="hidden sm:inline">Exportar palpites</span>
+            <span class="sm:hidden">Exportar Todos</span>
         </button>
 
         </div>{{-- fim botões em lote --}}
@@ -202,20 +217,34 @@
                         <span class="sm:hidden text-xs font-semibold text-slate-600 dark:text-slate-400 text-center leading-tight">{{ $match->awayTeam->code }}</span>
                     </div>
 
-                    {{-- Botão salvar --}}
+                    {{-- Botões: à direita, inline --}}
                     @if($locked || $finished)
                         <span class="flex-shrink-0 px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500 border border-slate-200 dark:border-slate-700 cursor-not-allowed"
                               aria-disabled="true">
                             {{ $finished ? 'Encerrado' : '🔒 Bloqueado' }}
                         </span>
                     @else
-                        <button type="submit"
-                                class="flex-shrink-0 px-4 py-2 rounded-xl text-xs font-semibold transition-all focus-visible:ring-2 focus-visible:ring-emerald-500
-                                       {{ $prediction
-                                           ? 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-emerald-500/30 hover:text-emerald-600 dark:hover:text-emerald-400'
-                                           : 'bg-emerald-600 dark:bg-emerald-500 hover:bg-emerald-700 dark:hover:bg-emerald-400 text-white shadow-md shadow-emerald-500/15' }}">
-                            {{ $prediction ? 'Atualizar' : 'Salvar' }}
-                        </button>
+                        <div class="flex items-center gap-1.5 flex-shrink-0">
+                            <button type="submit"
+                                    class="px-4 py-2 rounded-xl text-xs font-semibold transition-all focus-visible:ring-2 focus-visible:ring-emerald-500
+                                           {{ $prediction
+                                               ? 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-emerald-500/30 hover:text-emerald-600 dark:hover:text-emerald-400'
+                                               : 'bg-emerald-600 dark:bg-emerald-500 hover:bg-emerald-700 dark:hover:bg-emerald-400 text-white shadow-md shadow-emerald-500/15' }}">
+                                {{ $prediction ? 'Atualizar' : 'Salvar' }}
+                            </button>
+                            @if($prediction)
+                                <button type="button"
+                                        onclick="exportSinglePrediction({{ $match->id }}, this)"
+                                        title="Exportar este palpite para outros grupos"
+                                        class="px-3 py-2 rounded-xl text-xs font-semibold transition-all focus-visible:ring-2 focus-visible:ring-emerald-500
+                                               bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700
+                                               text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400
+                                               border border-slate-200 dark:border-slate-700 hover:border-emerald-500/30
+                                               whitespace-nowrap">
+                                    Exportar placar
+                                </button>
+                            @endif
+                        </div>
                     @endif
                 </form>
 
@@ -253,6 +282,32 @@
             </div>
         @endforelse
     </div>
+
+{{-- Modal: exportar palpites para outros grupos --}}
+<div id="export-modal"
+     class="fixed inset-0 z-50 hidden items-center justify-center p-4"
+     role="dialog" aria-modal="true" aria-labelledby="export-modal-title">
+    {{-- Backdrop --}}
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeExportModal()"></div>
+    {{-- Painel --}}
+    <div class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-sm p-6 animate-in">
+        <h2 id="export-modal-title" class="text-lg font-bold text-slate-900 dark:text-white mb-1">Exportar palpites</h2>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">
+            Copia todos os palpites deste grupo para os seus outros grupos. Partidas bloqueadas ou encerradas serão ignoradas.
+        </p>
+        <div id="export-status" class="hidden mb-4 text-sm font-medium rounded-xl px-4 py-3 border"></div>
+        <div class="flex items-center gap-3 justify-end">
+            <button type="button" onclick="closeExportModal()"
+                    class="px-4 py-2 rounded-xl text-sm font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">
+                Cancelar
+            </button>
+            <button type="button" id="btn-export-confirm" onclick="confirmExport()"
+                    class="px-4 py-2 rounded-xl text-sm font-semibold bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-400 transition-all focus-visible:ring-2 focus-visible:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                Exportar
+            </button>
+        </div>
+    </div>
+</div>
 
 <script>
 function toggleFilterPanel() {
@@ -489,6 +544,113 @@ function generatePrediction(homeStrength, awayStrength) {
 
 function randInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+var exportUrl = '{{ route('bolao.predict.export', $bolaoGroup) }}';
+
+function exportSinglePrediction(matchId, btn) {
+    var original = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<svg class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>';
+
+    fetch(exportUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json',
+        },
+        body: JSON.stringify({ match_id: matchId }),
+    })
+    .then(function (r) {
+        return r.json().then(function (data) { return { ok: r.ok, data: data }; });
+    })
+    .then(function (res) {
+        btn.disabled = false;
+        if (!res.ok) {
+            btn.innerHTML = original;
+            alert(res.data.error || 'Não foi possível exportar.');
+            return;
+        }
+        var d = res.data;
+        btn.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
+        btn.classList.remove('text-slate-500', 'dark:text-slate-400', 'hover:text-blue-600', 'dark:hover:text-blue-400');
+        btn.classList.add('text-emerald-600', 'dark:text-emerald-400');
+        btn.title = 'Exportado para ' + d.groups_count + ' grupo(s)';
+        setTimeout(function () {
+            btn.innerHTML = original;
+            btn.classList.remove('text-emerald-600', 'dark:text-emerald-400');
+            btn.classList.add('text-slate-500', 'dark:text-slate-400', 'hover:text-blue-600', 'dark:hover:text-blue-400');
+            btn.title = 'Exportar este palpite para outros grupos';
+        }, 2500);
+    })
+    .catch(function () {
+        btn.disabled = false;
+        btn.innerHTML = original;
+        alert('Erro de conexão. Tente novamente.');
+    });
+}
+
+function openExportModal() {
+    var modal = document.getElementById('export-modal');
+    var status = document.getElementById('export-status');
+    var btn = document.getElementById('btn-export-confirm');
+    status.className = 'hidden mb-4 text-sm font-medium rounded-xl px-4 py-3 border';
+    status.textContent = '';
+    btn.disabled = false;
+    btn.textContent = 'Exportar';
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function closeExportModal() {
+    var modal = document.getElementById('export-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+
+function confirmExport() {
+    var btn = document.getElementById('btn-export-confirm');
+    var status = document.getElementById('export-status');
+    btn.disabled = true;
+    btn.textContent = 'Exportando…';
+    status.className = 'hidden mb-4 text-sm font-medium rounded-xl px-4 py-3 border';
+
+    fetch(exportUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json',
+        },
+        body: JSON.stringify({}),
+    })
+    .then(function (r) {
+        return r.json().then(function (data) { return { ok: r.ok, data: data }; });
+    })
+    .then(function (res) {
+        if (!res.ok) {
+            status.className = 'mb-4 text-sm font-medium rounded-xl px-4 py-3 border bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/20';
+            status.textContent = res.data.error || 'Erro ao exportar.';
+            btn.disabled = false;
+            btn.textContent = 'Exportar';
+            return;
+        }
+        var d = res.data;
+        var msg = d.exported + ' palpite(s) exportado(s) para ' + d.groups_count + ' grupo(s)';
+        if (d.skipped > 0) msg += ' (' + d.skipped + ' ignorado(s) por bloqueio ou encerramento)';
+        msg += '.';
+        status.className = 'mb-4 text-sm font-medium rounded-xl px-4 py-3 border bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20';
+        status.textContent = msg;
+        document.getElementById('btn-export-confirm').style.display = 'none';
+        document.querySelector('#export-modal button[onclick="closeExportModal()"]').textContent = 'Fechar';
+    })
+    .catch(function (err) {
+        status.className = 'mb-4 text-sm font-medium rounded-xl px-4 py-3 border bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/20';
+        status.textContent = 'Erro de conexão. Tente novamente.';
+        btn.disabled = false;
+        btn.textContent = 'Exportar';
+    });
 }
 </script>
 @endsection

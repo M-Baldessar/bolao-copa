@@ -23,9 +23,9 @@
                 {{-- Header do grupo --}}
                 <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                     <h3 class="font-display font-bold text-lg text-slate-900 dark:text-white tracking-wide">Grupo {{ $group->name }}</h3>
-                    <span class="text-xs text-slate-500 dark:text-slate-600 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md font-mono">
+                    {{-- <span class="text-xs text-slate-500 dark:text-slate-600 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md font-mono">
                         {{ $group->teams->count() }} times
-                    </span>
+                    </span> --}}
                 </div>
 
                 @if($hasStandings)

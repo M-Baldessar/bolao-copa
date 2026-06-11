@@ -40,7 +40,7 @@ class SyncStandings extends Command
         foreach ($standings as $standing) {
             if (($standing['type'] ?? '') !== 'TOTAL') continue;
 
-            $groupLetter = str_replace('GROUP_', '', $standing['group'] ?? '');
+            $groupLetter = trim(str_replace(['GROUP_', 'Group'], '', $standing['group'] ?? ''));
             $group = Group::where('name', $groupLetter)->first();
 
             if (! $group) {

@@ -192,6 +192,70 @@ class BolaoGroupController extends Controller
         return response()->json(['saved' => $saved, 'skipped' => $skipped]);
     }
 
+    public function exportPredictions(BolaoGroup $bolaoGroup)
+    {
+        $user = auth()->user();
+        $isMember = $bolaoGroup->members()->where('user_id', $user->id)->exists()
+            || $bolaoGroup->owner_id === $user->id;
+
+        if (!$isMember) {
+            abort(403);
+        }
+
+        // Outros grupos do usuário (excluindo o atual)
+        $otherGroups = BolaoGroup::where('id', '!=', $bolaoGroup->id)
+            ->where(function ($q) use ($user) {
+                $q->where('owner_id', $user->id)
+                  ->orWhereHas('members', fn($q2) => $q2->where('user_id', $user->id));
+            })
+            ->get();
+
+        if ($otherGroups->isEmpty()) {
+            return response()->json(['error' => 'Você não participa de outros grupos.'], 422);
+        }
+
+        // Palpites do usuário no grupo atual (filtro opcional por partida)
+        $query = Prediction::where('user_id', $user->id)
+            ->where('bolao_group_id', $bolaoGroup->id);
+
+        if (request()->filled('match_id')) {
+            $query->where('match_id', (int) request('match_id'));
+        }
+
+        $sourcePredictions = $query->get();
+
+        if ($sourcePredictions->isEmpty()) {
+            return response()->json(['error' => 'Nenhum palpite encontrado neste grupo para exportar.'], 422);
+        }
+
+        $exported = 0;
+        $skipped  = 0;
+
+        foreach ($otherGroups as $targetGroup) {
+            foreach ($sourcePredictions as $pred) {
+                $match = GameMatch::find($pred->match_id);
+                if (!$match) { $skipped++; continue; }
+
+                // Ignora partidas com resultado ou bloqueadas
+                if ($match->home_score !== null) { $skipped++; continue; }
+                if ($match->match_date && now()->gte($match->match_date->copy()->subMinutes(5))) { $skipped++; continue; }
+
+                Prediction::updateOrCreate(
+                    ['user_id' => $user->id, 'bolao_group_id' => $targetGroup->id, 'match_id' => $match->id],
+                    ['home_score' => $pred->home_score, 'away_score' => $pred->away_score]
+                );
+
+                $exported++;
+            }
+        }
+
+        return response()->json([
+            'exported'     => $exported,
+            'skipped'      => $skipped,
+            'groups_count' => $otherGroups->count(),
+        ]);
+    }
+
     public function autoFillPredictions(BolaoGroup $bolaoGroup)
     {
         $user = auth()->user();

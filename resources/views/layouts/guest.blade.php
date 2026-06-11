@@ -17,11 +17,17 @@
     <meta property="og:description" content="@yield('meta_description', 'Participe do Bolão da Copa do Mundo 2026! Faça seus palpites, crie grupos com amigos.')">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:locale" content="pt_BR">
+    <meta property="og:image" content="@yield('og_image', asset('og-image.svg'))">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Bolão Copa 2026 — O bolão mais emocionante da Copa do Mundo FIFA 2026">
 
     {{-- Twitter Card --}}
-    <meta name="twitter:card" content="summary">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Bolão Copa 2026 — @yield('title', 'Entrar')">
     <meta name="twitter:description" content="@yield('meta_description', 'Participe do Bolão da Copa do Mundo 2026! Faça seus palpites, crie grupos com amigos.')">
+    <meta name="twitter:image" content="@yield('og_image', asset('og-image.svg'))">
+    <meta name="twitter:image:alt" content="Bolão Copa 2026 — O bolão mais emocionante da Copa do Mundo FIFA 2026">
 
     {{-- Google Fonts --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
