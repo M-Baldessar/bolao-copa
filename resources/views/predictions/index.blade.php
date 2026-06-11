@@ -3,7 +3,7 @@
 @section('title', 'Meus Palpites')
 
 @section('content')
-    <div class="flex items-center justify-between mb-8 animate-in">
+    <div class="flex items-center justify-between mb-6 animate-in">
         <div>
             <h1 class="font-display font-bold text-3xl text-slate-900 dark:text-white tracking-wide">Meus Palpites</h1>
             <p class="text-slate-500 mt-1 text-sm">{{ $predictions->count() }} palpite(s) enviado(s)</p>
@@ -27,131 +27,129 @@
             </a>
         </div>
     @else
-        {{-- Legenda de pontuação --}}
-        @php
-            $badges = [
-                ['color' => 'emerald', 'label' => 'Placar Exato (20 pts)'],
-                ['color' => 'blue',    'label' => 'Placar do Vencedor (15 pts)'],
-                ['color' => 'sky',     'label' => 'Vencedor + Diff. Gols (12 pts)'],
-                ['color' => 'amber',   'label' => 'Vencedor + Placar Perdedor (10 pts)'],
-                ['color' => 'indigo',  'label' => 'Vencedor Certo / Empate Certo (8 pts)'],
-                ['color' => 'red',     'label' => 'Errado (0 pts)'],
-                ['color' => 'slate',   'label' => 'Aguardando'],
-            ];
-        @endphp
-        <div class="mb-5 animate-in stagger-1">
-            <div class="flex items-center gap-2">
-                <button type="button" id="btn-legend-toggle" onclick="toggleLegend()"
-                        class="md:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600 transition-all">
-                    Pontuação
-                    <svg id="legend-chevron" class="w-3 h-3 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </button>
-            </div>
-            <div id="legend-panel" class="hidden md:flex flex-wrap gap-2 mt-2" role="list" aria-label="Legenda de pontuação">
-                @foreach($badges as $badge)
-                    <span class="inline-flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-500 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-3 py-1 rounded-full" role="listitem">
-                        <span class="w-2 h-2 rounded-full bg-{{ $badge['color'] }}-500" aria-hidden="true"></span>
-                        {{ $badge['label'] }}
-                    </span>
-                @endforeach
-            </div>
-        </div>
+        <div class="space-y-2" role="list" aria-label="Meus palpites">
+            @foreach($predictions as $i => $prediction)
+                @php
+                    $match  = $prediction->match;
+                    $result = $prediction->result();
+                    $statusMap = [
+                        'pending'        => ['color' => 'slate',  'label' => 'Aguardando'],
+                        'exact'          => ['color' => 'emerald','label' => 'Placar Exato +20'],
+                        'winner_score'   => ['color' => 'blue',   'label' => 'Placar Vencedor +15'],
+                        'goal_diff'      => ['color' => 'sky',    'label' => 'Diff. de Gols +12'],
+                        'loser_score'    => ['color' => 'amber',  'label' => 'Placar Perdedor +10'],
+                        'correct_winner' => ['color' => 'indigo', 'label' => 'Vencedor Certo +8'],
+                        'draw'           => ['color' => 'purple', 'label' => 'Empate Certo +8'],
+                        'wrong'          => ['color' => 'red',    'label' => 'Errado'],
+                    ];
+                    $s = $statusMap[$result] ?? $statusMap['pending'];
+                @endphp
 
-        <script>
-        function toggleLegend() {
-            var panel = document.getElementById('legend-panel');
-            var chevron = document.getElementById('legend-chevron');
-            var isHidden = panel.classList.contains('hidden');
-            panel.classList.toggle('hidden', !isHidden);
-            panel.classList.toggle('flex', isHidden);
-            chevron.style.transform = isHidden ? 'rotate(180deg)' : '';
-        }
-        </script>
+                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 rounded-xl p-4 transition-all animate-in"
+                     style="animation-delay: {{ min($i * 0.03, 0.3) }}s"
+                     role="listitem">
 
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden animate-in stagger-2">
-          <div class="overflow-x-auto">
-            <table class="w-full text-sm">
-                <thead class="border-b border-slate-100 dark:border-slate-800">
-                    <tr>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-500 uppercase tracking-wider hidden sm:table-cell">Fase</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-500 uppercase tracking-wider">Partida</th>
-                        <th class="px-4 py-3 text-center text-xs font-semibold text-slate-600 dark:text-slate-500 uppercase tracking-wider">Palpite</th>
-                        <th class="px-4 py-3 text-center text-xs font-semibold text-slate-600 dark:text-slate-500 uppercase tracking-wider hidden sm:table-cell">Resultado</th>
-                        <th class="px-4 py-3 text-center text-xs font-semibold text-slate-600 dark:text-slate-500 uppercase tracking-wider">Status</th>
-                        <th class="px-4 py-3 text-center text-xs font-semibold text-slate-600 dark:text-slate-500 uppercase tracking-wider hidden sm:table-cell">Bolão</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60">
-                    @foreach($predictions as $prediction)
-                        @php $result = $prediction->result(); @endphp
-                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
-                            <td class="px-4 py-3 hidden sm:table-cell">
-                                @if($prediction->match->stage === 'group')
-                                    <span class="text-xs font-semibold text-emerald-700 dark:text-emerald-400">Grupo {{ $prediction->match->group?->name }}</span>
-                                @else
-                                    <span class="text-xs font-semibold text-amber-700 dark:text-amber-400">
-                                        {{ \App\Models\GameMatch::STAGE_LABELS[$prediction->match->stage] ?? $prediction->match->stage }}
-                                    </span>
-                                @endif
-                            </td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center gap-1.5 flex-wrap text-slate-700 dark:text-slate-300">
-                                    <span aria-hidden="true">{{ $prediction->match->homeTeam->flag_emoji }}</span>
-                                    <span class="font-medium text-sm">{{ $prediction->match->homeTeam->name }}</span>
-                                    <span class="text-slate-400 dark:text-slate-600 text-xs">vs</span>
-                                    <span class="font-medium text-sm">{{ $prediction->match->awayTeam->name }}</span>
-                                    <span aria-hidden="true">{{ $prediction->match->awayTeam->flag_emoji }}</span>
+                    {{-- Header --}}
+                    <div class="flex items-center gap-2 mb-4">
+                        @if($match->stage === 'group')
+                            <span class="text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 px-2.5 py-0.5 rounded-full">
+                                Grupo {{ $match->group?->name }}
+                            </span>
+                        @else
+                            <span class="text-xs font-semibold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 px-2.5 py-0.5 rounded-full">
+                                {{ \App\Models\GameMatch::STAGE_LABELS[$match->stage] ?? $match->stage }}
+                            </span>
+                        @endif
+                        <span class="text-xs text-slate-400 dark:text-slate-600">#{{ $match->match_number }}</span>
+
+                        <div class="ml-auto flex items-center gap-2">
+                            <a href="{{ route('bolao.show', $prediction->bolaoGroup) }}"
+                               class="text-xs font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors hidden sm:inline focus-visible:ring-2 focus-visible:ring-emerald-500 rounded">
+                                {{ $prediction->bolaoGroup->name }}
+                            </a>
+                            @if($match->match_date)
+                                <span class="text-xs text-slate-400 dark:text-slate-600 hidden sm:inline" aria-hidden="true">·</span>
+                                <div class="flex items-center gap-1 text-xs text-slate-500">
+                                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    <time datetime="{{ $match->match_date->toDateTimeString() }}">
+                                        {{ $match->match_date->format('d/m/Y') }}
+                                        <span class="text-slate-400 dark:text-slate-700" aria-hidden="true">·</span>
+                                        {{ $match->match_date->format('H:i') }}
+                                    </time>
                                 </div>
-                            </td>
-                            <td class="px-4 py-3 text-center">
-                                <span class="font-display font-bold text-slate-800 dark:text-slate-200 text-base tracking-wide">
-                                    {{ $prediction->home_score }} × {{ $prediction->away_score }}
+                            @endif
+                        </div>
+                    </div>
+
+                    {{-- Scoreboard --}}
+                    <div class="flex items-center gap-3">
+                        {{-- Time da casa --}}
+                        <div class="flex items-center gap-2.5 flex-1 min-w-0 justify-end">
+                            <span class="font-semibold text-slate-700 dark:text-slate-200 text-sm truncate hidden sm:inline">{{ $match->homeTeam->name }}</span>
+                            <div class="flex flex-col items-center flex-shrink-0">
+                                <span class="text-2xl leading-none" aria-hidden="true">{{ $match->homeTeam->flag_emoji }}</span>
+                                <span class="text-[10px] font-semibold text-slate-500 dark:text-slate-400 mt-0.5 tracking-wide sm:hidden">{{ $match->homeTeam->code }}</span>
+                            </div>
+                        </div>
+
+                        {{-- Palpite --}}
+                        <div class="flex flex-col items-center gap-1 flex-shrink-0">
+                            <div class="flex items-center gap-1.5">
+                                <div class="w-11 h-11 flex items-center justify-center border-2 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800/50 rounded-xl text-xl font-bold text-slate-700 dark:text-slate-300">
+                                    {{ $prediction->home_score }}
+                                </div>
+                                <span class="text-slate-400 dark:text-slate-600 font-bold text-sm" aria-hidden="true">×</span>
+                                <div class="w-11 h-11 flex items-center justify-center border-2 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800/50 rounded-xl text-xl font-bold text-slate-700 dark:text-slate-300">
+                                    {{ $prediction->away_score }}
+                                </div>
+                            </div>
+                            <span class="text-[10px] text-slate-400 dark:text-slate-600 font-medium uppercase tracking-wide">Palpite</span>
+                        </div>
+
+                        {{-- Time visitante --}}
+                        <div class="flex items-center gap-2.5 flex-1 min-w-0">
+                            <div class="flex flex-col items-center flex-shrink-0">
+                                <span class="text-2xl leading-none" aria-hidden="true">{{ $match->awayTeam->flag_emoji }}</span>
+                                <span class="text-[10px] font-semibold text-slate-500 dark:text-slate-400 mt-0.5 tracking-wide sm:hidden">{{ $match->awayTeam->code }}</span>
+                            </div>
+                            <span class="font-semibold text-slate-700 dark:text-slate-200 text-sm truncate hidden sm:inline">{{ $match->awayTeam->name }}</span>
+                        </div>
+                    </div>
+
+                    {{-- Rodapé: resultado real + status --}}
+                    <div class="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+                        {{-- Resultado real --}}
+                        <div class="text-xs text-slate-500 dark:text-slate-500">
+                            @if($match->home_score !== null)
+                                Resultado:
+                                <span class="font-bold text-slate-700 dark:text-slate-300">
+                                    {{ $match->home_score }} × {{ $match->away_score }}
                                 </span>
-                            </td>
-                            <td class="px-4 py-3 text-center hidden sm:table-cell">
-                                @if($prediction->match->home_score !== null)
-                                    <span class="font-display font-bold text-slate-600 dark:text-slate-400 text-base tracking-wide">
-                                        {{ $prediction->match->home_score }} × {{ $prediction->match->away_score }}
-                                    </span>
-                                @else
-                                    <span class="text-slate-400 dark:text-slate-700 text-base">—</span>
-                                @endif
-                            </td>
-                            <td class="px-4 py-3 text-center whitespace-nowrap">
-                                @php
-                                    $statusMap = [
-                                        'pending'        => ['color' => 'slate',  'short' => 'Aguard.', 'long' => 'Aguardando',                    'prefix' => ''],
-                                        'exact'          => ['color' => 'emerald','short' => '✓ +20',   'long' => 'Placar Exato +20',              'prefix' => '✓ '],
-                                        'winner_score'   => ['color' => 'blue',   'short' => '✓ +15',   'long' => 'Placar do Vencedor +15',        'prefix' => '✓ '],
-                                        'goal_diff'      => ['color' => 'sky',    'short' => '✓ +12',   'long' => 'Diff. de Gols +12',             'prefix' => '✓ '],
-                                        'loser_score'    => ['color' => 'amber',  'short' => '✓ +10',   'long' => 'Placar do Perdedor +10',        'prefix' => '✓ '],
-                                        'correct_winner' => ['color' => 'indigo', 'short' => '✓ +8',    'long' => 'Vencedor Certo +8',             'prefix' => '✓ '],
-                                        'draw'           => ['color' => 'purple', 'short' => '~ +8',    'long' => 'Empate Certo +8',               'prefix' => '~ '],
-                                        'wrong'          => ['color' => 'red',    'short' => '✗ 0',     'long' => 'Errado',                        'prefix' => '✗ '],
-                                    ];
-                                    $s = $statusMap[$result] ?? $statusMap['pending'];
-                                @endphp
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold
-                                    bg-{{ $s['color'] }}-50 dark:bg-{{ $s['color'] }}-500/10
-                                    text-{{ $s['color'] }}-700 dark:text-{{ $s['color'] }}-400
-                                    border border-{{ $s['color'] }}-200 dark:border-{{ $s['color'] }}-500/20">
-                                    <span class="sm:hidden">{{ $s['short'] }}</span>
-                                    <span class="hidden sm:inline">{{ $s['long'] }}</span>
-                                </span>
-                            </td>
-                            <td class="px-4 py-3 text-center hidden sm:table-cell">
-                                <a href="{{ route('bolao.show', $prediction->bolaoGroup) }}"
-                                   class="text-xs font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 rounded">
-                                    {{ $prediction->bolaoGroup->name }}
-                                </a>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-          </div>
+                            @else
+                                <span class="text-slate-400 dark:text-slate-600 italic">Aguardando resultado</span>
+                            @endif
+                        </div>
+
+                        {{-- Status badge --}}
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold
+                            bg-{{ $s['color'] }}-50 dark:bg-{{ $s['color'] }}-500/10
+                            text-{{ $s['color'] }}-700 dark:text-{{ $s['color'] }}-400
+                            border border-{{ $s['color'] }}-200 dark:border-{{ $s['color'] }}-500/20">
+                            {{ $s['label'] }}
+                        </span>
+                    </div>
+
+                    {{-- Nome do bolão (mobile) --}}
+                    <div class="mt-2 sm:hidden">
+                        <a href="{{ route('bolao.show', $prediction->bolaoGroup) }}"
+                           class="text-xs font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors">
+                            {{ $prediction->bolaoGroup->name }}
+                        </a>
+                    </div>
+                </div>
+            @endforeach
         </div>
     @endif
 @endsection

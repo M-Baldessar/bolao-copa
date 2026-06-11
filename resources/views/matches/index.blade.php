@@ -118,7 +118,10 @@
                     {{-- Time da casa --}}
                     <div class="flex items-center gap-2.5 flex-1 min-w-0 justify-end">
                         <span class="font-semibold text-slate-700 dark:text-slate-200 text-sm truncate hidden sm:inline">{{ $match->homeTeam->name }}</span>
-                        <span class="text-2xl leading-none flex-shrink-0" aria-hidden="true">{{ $match->homeTeam->flag_emoji }}</span>
+                        <div class="flex flex-col items-center flex-shrink-0">
+                            <span class="text-2xl leading-none" aria-hidden="true">{{ $match->homeTeam->flag_emoji }}</span>
+                            <span class="text-[10px] font-semibold text-slate-500 dark:text-slate-400 mt-0.5 tracking-wide sm:hidden">{{ $match->homeTeam->code }}</span>
+                        </div>
                     </div>
 
                     {{-- Placar --}}
@@ -144,7 +147,10 @@
 
                     {{-- Time visitante --}}
                     <div class="flex items-center gap-2.5 flex-1 min-w-0">
-                        <span class="text-2xl leading-none flex-shrink-0" aria-hidden="true">{{ $match->awayTeam->flag_emoji }}</span>
+                        <div class="flex flex-col items-center flex-shrink-0">
+                            <span class="text-2xl leading-none" aria-hidden="true">{{ $match->awayTeam->flag_emoji }}</span>
+                            <span class="text-[10px] font-semibold text-slate-500 dark:text-slate-400 mt-0.5 tracking-wide sm:hidden">{{ $match->awayTeam->code }}</span>
+                        </div>
                         <span class="font-semibold text-slate-700 dark:text-slate-200 text-sm truncate hidden sm:inline">{{ $match->awayTeam->name }}</span>
                     </div>
                 </div>

@@ -3,20 +3,18 @@
 @section('title', 'Palpites — ' . $bolaoGroup->name)
 
 @section('content')
-    <div class="flex items-start justify-between gap-4 mb-6 animate-in">
-        <div>
+    <div class="mb-6 animate-in">
+        {{-- Linha 1: voltar + botões --}}
+        <div class="flex items-center justify-between gap-4">
             <a href="{{ route('bolao.show', $bolaoGroup) }}" class="inline-flex items-center gap-1.5 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-sm transition-colors focus-visible:ring-2 focus-visible:ring-emerald-500 rounded">
                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
                 </svg>
                 {{ $bolaoGroup->name }}
             </a>
-            <h1 class="font-display font-bold text-3xl text-slate-900 dark:text-white tracking-wide mt-2">Fazer Palpites</h1>
-            {{-- <p class="text-slate-500 mt-0.5 text-sm">Seus palpites neste bolão são independentes dos outros</p> --}}
-        </div>
 
         {{-- Botões de ação em lote --}}
-        <div class="flex-shrink-0 mt-1 flex items-center gap-2">
+        <div class="flex items-center gap-2">
 
         {{-- Salvar todos --}}
         <button type="button" id="btn-save-all" onclick="saveAllPredictions()" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all
@@ -45,6 +43,18 @@
         </button>
 
         </div>{{-- fim botões em lote --}}
+        </div>{{-- fim linha 1 --}}
+
+        {{-- Linha 2: título + regra (largura total) --}}
+        <div class="mt-2">
+            <h1 class="font-display font-bold text-3xl text-slate-900 dark:text-white tracking-wide">Fazer Palpites</h1>
+            <p class="text-slate-500 dark:text-slate-400 text-xs mt-1 flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                </svg>
+                Palpites encerram 5 minutos antes do início de cada partida
+            </p>
+        </div>
     </div>
 
     {{-- Filtro por grupo / fase --}}
