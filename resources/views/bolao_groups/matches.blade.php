@@ -101,7 +101,7 @@
         @forelse($matches as $i => $match)
             @php
                 $prediction = $match->predictions->first();
-                $locked = $match->match_date && now()->gte($match->match_date->copy()->subHour());
+                $locked = $match->match_date && now()->gte($match->match_date->copy()->subMinutes(5));
                 $finished = $match->home_score !== null;
             @endphp
 

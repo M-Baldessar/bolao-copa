@@ -134,8 +134,8 @@ class BolaoGroupController extends Controller
             return back()->with('error', 'Não é possível alterar o palpite de uma partida com resultado já registrado.');
         }
 
-        if ($match->match_date && now()->gte($match->match_date)) {
-            return back()->with('error', 'Os palpites são bloqueados no horário de início da partida.');
+        if ($match->match_date && now()->gte($match->match_date->copy()->subMinutes(5))) {
+            return back()->with('error', 'Os palpites são bloqueados 5 minutos antes do início da partida.');
         }
 
         $validated = $request->validate([
@@ -179,7 +179,7 @@ class BolaoGroupController extends Controller
 
             // Ignora partidas com resultado ou bloqueadas
             if ($match->home_score !== null) { $skipped++; continue; }
-            if ($match->match_date && now()->gte($match->match_date)) { $skipped++; continue; }
+            if ($match->match_date && now()->gte($match->match_date->copy()->subMinutes(5))) { $skipped++; continue; }
 
             Prediction::updateOrCreate(
                 ['user_id' => $user->id, 'bolao_group_id' => $bolaoGroup->id, 'match_id' => $match->id],
@@ -214,7 +214,7 @@ class BolaoGroupController extends Controller
             ->whereNotIn('id', $alreadyPredicted)
             ->where(function ($q) {
                 $q->whereNull('match_date')
-                  ->orWhere('match_date', '>', now());
+                  ->orWhere('match_date', '>', now()->addMinutes(5));
             })
             ->with(['homeTeam', 'awayTeam'])
             ->get();
