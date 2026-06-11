@@ -17,6 +17,7 @@ class MatchController extends Controller
         $stageFilter = $request->query('stage');
 
         $query = GameMatch::with(['homeTeam', 'awayTeam', 'group'])
+            ->orderBy('match_date')
             ->orderBy('match_number');
 
         if ($groupFilter) {

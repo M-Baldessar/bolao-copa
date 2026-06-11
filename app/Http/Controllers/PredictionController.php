@@ -11,7 +11,10 @@ class PredictionController extends Controller
         $predictions = auth()->user()
             ->predictions()
             ->with(['match.homeTeam', 'match.awayTeam', 'match.group', 'bolaoGroup'])
-            ->orderBy('match_id')
+            ->join('game_matches', 'predictions.match_id', '=', 'game_matches.id')
+            ->orderBy('game_matches.match_date')
+            ->orderBy('predictions.match_id')
+            ->select('predictions.*')
             ->get();
 
         return view('predictions.index', compact('predictions'));
