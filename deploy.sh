@@ -7,6 +7,7 @@ PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$PROJECT_DIR"
 
 echo "--- Pulling do GitHub ---"
+git checkout -- package-lock.json composer.lock 2>/dev/null || true
 git pull origin main
 
 echo "--- Instalando dependências PHP ---"
