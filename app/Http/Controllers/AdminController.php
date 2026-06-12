@@ -145,6 +145,44 @@ class AdminController extends Controller
         ];
     }
 
+    public function ranking()
+    {
+        $groups = \App\Models\BolaoGroup::with(['members'])->get();
+
+        $rows = [];
+
+        foreach ($groups as $group) {
+            $memberRanking = $group->buildRanking();
+
+            foreach ($memberRanking as $entry) {
+                $predictions = $entry['user']->predictions()
+                    ->where('bolao_group_id', $group->id)
+                    ->with('match')
+                    ->get();
+
+                $finished     = $predictions->filter(fn($p) => $p->match && $p->match->home_score !== null);
+                $exactCount   = $finished->filter(fn($p) => $p->result() === 'exact')->count();
+                $correctCount = $finished->filter(fn($p) => ! in_array($p->result(), ['wrong', 'pending']))->count();
+
+                $rows[] = [
+                    'user'              => $entry['user'],
+                    'group'             => $group,
+                    'points'            => $entry['points'],
+                    'predictions_count' => $predictions->count(),
+                    'finished_count'    => $finished->count(),
+                    'exact_count'       => $exactCount,
+                    'correct_count'     => $correctCount,
+                ];
+            }
+        }
+
+        $ranking = collect($rows)->sortByDesc('points')->values();
+
+        $totalMatches = \App\Models\GameMatch::whereNotNull('home_score')->count();
+
+        return view('admin.ranking', compact('ranking', 'totalMatches'));
+    }
+
     public function destroyUser(User $user)
     {
         if ($user->is_admin) {

@@ -79,8 +79,12 @@
                             <span aria-hidden="true">⚙</span> Resultados
                         </a>
                         <a href="{{ route('admin.users') }}"
-                           class="flex items-center gap-2 px-4 py-3 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-500/10 transition border-t border-slate-100 dark:border-slate-800 {{ request()->routeIs('admin.users') ? 'bg-red-500/10' : '' }}">
+                           class="flex items-center gap-2 px-4 py-3 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-500/10 transition border-t border-slate-100 dark:border-slate-800 {{ request()->routeIs('admin.users*') ? 'bg-red-500/10' : '' }}">
                             <span aria-hidden="true">👥</span> Usuários
+                        </a>
+                        <a href="{{ route('admin.ranking') }}"
+                           class="flex items-center gap-2 px-4 py-3 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-500/10 transition border-t border-slate-100 dark:border-slate-800 {{ request()->routeIs('admin.ranking') ? 'bg-red-500/10' : '' }}">
+                            <span aria-hidden="true">🏆</span> Ranking
                         </a>
                     </div>
                 </div>
@@ -135,6 +139,12 @@
                        class="px-3.5 py-2 rounded-lg text-sm font-medium transition-all
                               {{ request()->routeIs('admin.users*') ? 'bg-red-500/15 border border-red-500/40 text-red-700 dark:text-red-300' : 'bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-500/20 hover:text-red-700 dark:hover:text-red-300' }}">
                         <span aria-hidden="true">👥</span> Usuários
+                    </a>
+                    <a href="{{ route('admin.ranking') }}"
+                       role="listitem"
+                       class="px-3.5 py-2 rounded-lg text-sm font-medium transition-all
+                              {{ request()->routeIs('admin.ranking') ? 'bg-red-500/15 border border-red-500/40 text-red-700 dark:text-red-300' : 'bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-500/20 hover:text-red-700 dark:hover:text-red-300' }}">
+                        <span aria-hidden="true">🏆</span> Ranking
                     </a>
                     @endif
                 </div>

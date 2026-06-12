@@ -71,7 +71,7 @@
                     <div class="flex-1 min-w-0">
                         <p id="champ-deadline-label" class="text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wide">Prazo para escolher!</p>
                         <p class="text-xs text-amber-600/80 dark:text-amber-500/70 mt-0.5">
-                            Até {{ $champLockDate->format('d/m/Y \à\s H:i') }} (início da primeira partida)
+                            Até {{ $champLockDate->format('d/m/Y \à\s H:i') }} (Último dia da primeira rodada da fase de grupos)
                         </p>
                         <p id="champ-countdown" class="text-sm font-bold text-amber-700 dark:text-amber-400 mt-1">carregando...</p>
                     </div>

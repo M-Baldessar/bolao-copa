@@ -29,29 +29,22 @@ class ChampionPick extends Model
         return $this->belongsTo(Team::class, 'runner_up_team_id');
     }
 
-    /**
-     * Retorna se as escolhas de campeão estão bloqueadas
-     * (a partir do início da primeira partida).
-     */
     public static function isLocked(): bool
     {
-        $firstMatch = GameMatch::whereNotNull('match_date')
-            ->orderBy('match_date')
-            ->first();
-
-        return $firstMatch && now()->gte($firstMatch->match_date);
+        return now()->gte(static::lockDate());
     }
 
-    /**
-     * Retorna a data/hora de bloqueio (início da primeira partida).
-     */
     public static function lockDate(): ?\Carbon\Carbon
     {
-        $firstMatch = GameMatch::whereNotNull('match_date')
-            ->orderBy('match_date')
-            ->first();
+        $deadline = env('CHAMPION_PICK_DEADLINE');
 
-        return $firstMatch?->match_date;
+        if ($deadline) {
+            return \Carbon\Carbon::parse($deadline);
+        }
+
+        return GameMatch::whereNotNull('match_date')
+            ->orderBy('match_date')
+            ->first()?->match_date;
     }
 
     /**

@@ -36,48 +36,63 @@
                      style="animation-delay: {{ min($i * 0.04, 0.4) }}s">
 
                     {{-- Header da partida --}}
-                    <div class="px-5 py-3 border-b border-slate-100 dark:border-slate-800 flex flex-wrap items-center gap-3">
-                        {{-- Badge fase --}}
-                        @if($match->stage === 'group')
-                            <span class="text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 px-2.5 py-0.5 rounded-full">
-                                Grupo {{ $match->group?->name }}
-                            </span>
-                        @else
-                            <span class="text-xs font-semibold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 px-2.5 py-0.5 rounded-full">
-                                {{ \App\Models\GameMatch::STAGE_LABELS[$match->stage] ?? $match->stage }}
-                            </span>
-                        @endif
+                    <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-800">
 
-                        {{-- Times e placar --}}
-                        <div class="flex items-center gap-2 flex-1 min-w-0">
-                            <span class="text-lg leading-none" aria-hidden="true">{{ $match->homeTeam->flag_emoji }}</span>
-                            <span class="font-semibold text-slate-800 dark:text-slate-200 text-sm truncate">{{ $match->homeTeam->name }}</span>
-
-                            @if($finished)
-                                <span class="font-display font-bold text-slate-900 dark:text-white text-base tracking-wider mx-1">
-                                    {{ $match->home_score }} × {{ $match->away_score }}
+                        {{-- Linha 1: badge + número + data + status --}}
+                        <div class="flex items-center gap-2">
+                            @if($match->stage === 'group')
+                                <span class="text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 px-2.5 py-0.5 rounded-full whitespace-nowrap">
+                                    Grupo {{ $match->group?->name }}
                                 </span>
                             @else
-                                <span class="text-slate-400 dark:text-slate-600 text-xs mx-1 font-bold">vs</span>
+                                <span class="text-xs font-semibold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 px-2.5 py-0.5 rounded-full whitespace-nowrap">
+                                    {{ \App\Models\GameMatch::STAGE_LABELS[$match->stage] ?? $match->stage }}
+                                </span>
                             @endif
 
-                            <span class="font-semibold text-slate-800 dark:text-slate-200 text-sm truncate">{{ $match->awayTeam->name }}</span>
-                            <span class="text-lg leading-none" aria-hidden="true">{{ $match->awayTeam->flag_emoji }}</span>
-                        </div>
-
-                        {{-- Data e status --}}
-                        <div class="flex items-center gap-2 flex-shrink-0">
                             @if($match->match_date)
-                                <time class="text-xs text-slate-400" datetime="{{ $match->match_date->toDateTimeString() }}">
+                                <time class="text-xs text-slate-400 whitespace-nowrap" datetime="{{ $match->match_date->toDateTimeString() }}">
                                     {{ $match->match_date->format('d/m H:i') }}
                                 </time>
                             @endif
-                            @if($finished)
-                                <span class="text-xs font-semibold text-slate-500 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded-full">Encerrado</span>
-                            @else
-                                <span class="text-xs font-semibold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 px-2.5 py-0.5 rounded-full">Em andamento</span>
-                            @endif
+
+                            <div class="ml-auto">
+                                @if($finished)
+                                    <span class="text-xs font-semibold text-slate-500 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded-full whitespace-nowrap">Encerrado</span>
+                                @else
+                                    <span class="text-xs font-semibold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 px-2.5 py-0.5 rounded-full whitespace-nowrap">Em andamento</span>
+                                @endif
+                            </div>
                         </div>
+
+                        {{-- Linha 2: bandeiras + times + placar (centrado) --}}
+                        <div class="flex items-center gap-3 mt-3 mb-1">
+                            {{-- Time da casa --}}
+                            <div class="flex flex-col items-center gap-1 flex-1 min-w-0">
+                                <span class="text-2xl leading-none" aria-hidden="true">{{ $match->homeTeam->flag_emoji }}</span>
+                                <span class="text-xs font-semibold text-slate-600 dark:text-slate-400 text-center leading-tight hidden sm:block truncate max-w-[80px]">{{ $match->homeTeam->name }}</span>
+                                <span class="text-xs font-semibold text-slate-600 dark:text-slate-400 sm:hidden">{{ $match->homeTeam->code }}</span>
+                            </div>
+
+                            {{-- Placar --}}
+                            <div class="flex-shrink-0 text-center">
+                                @if($finished)
+                                    <span class="font-display font-bold text-slate-900 dark:text-white text-xl tracking-wider">
+                                        {{ $match->home_score }} × {{ $match->away_score }}
+                                    </span>
+                                @else
+                                    <span class="text-slate-400 dark:text-slate-600 font-bold text-base">vs</span>
+                                @endif
+                            </div>
+
+                            {{-- Time visitante --}}
+                            <div class="flex flex-col items-center gap-1 flex-1 min-w-0">
+                                <span class="text-2xl leading-none" aria-hidden="true">{{ $match->awayTeam->flag_emoji }}</span>
+                                <span class="text-xs font-semibold text-slate-600 dark:text-slate-400 text-center leading-tight hidden sm:block truncate max-w-[80px]">{{ $match->awayTeam->name }}</span>
+                                <span class="text-xs font-semibold text-slate-600 dark:text-slate-400 sm:hidden">{{ $match->awayTeam->code }}</span>
+                            </div>
+                        </div>
+
                     </div>
 
                     {{-- Palpites dos membros --}}
