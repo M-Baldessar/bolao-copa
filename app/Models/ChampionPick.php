@@ -36,7 +36,7 @@ class ChampionPick extends Model
 
     public static function lockDate(): ?\Carbon\Carbon
     {
-        $deadline = env('CHAMPION_PICK_DEADLINE');
+        $deadline = config('bolao.champion_pick_deadline');
 
         if ($deadline) {
             return \Carbon\Carbon::parse($deadline);
