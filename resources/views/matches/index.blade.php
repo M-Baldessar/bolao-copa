@@ -82,6 +82,9 @@
     {{-- Lista de partidas --}}
     <div class="space-y-2" role="list" aria-label="Lista de partidas">
         @forelse($matches as $i => $match)
+            @php
+                $inProgress = $match->match_date && now()->gte($match->match_date->copy()->subMinutes(5)) && $match->home_score === null;
+            @endphp
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 rounded-xl p-4 transition-all animate-in"
                  style="animation-delay: {{ min($i * 0.03, 0.3) }}s"
                  role="listitem">
@@ -154,6 +157,15 @@
                         <span class="font-semibold text-slate-700 dark:text-slate-200 text-sm truncate hidden sm:inline">{{ $match->awayTeam->name }}</span>
                     </div>
                 </div>
+
+                @if($inProgress)
+                    <div class="mt-3 pt-3 border-t border-orange-100 dark:border-orange-500/10 text-xs text-orange-700 dark:text-orange-500/70 flex items-center gap-1.5">
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Partida em andamento
+                    </div>
+                @endif
             </div>
         @empty
             <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-16 text-center">

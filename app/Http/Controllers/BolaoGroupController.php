@@ -103,7 +103,8 @@ class BolaoGroupController extends Controller
             'group',
             'predictions' => fn($q) => $q->where('user_id', $user->id)
                                           ->where('bolao_group_id', $bolaoGroup->id),
-        ])->orderBy('match_date')->orderBy('match_number');
+        ])->orderByRaw('CASE WHEN home_score IS NOT NULL THEN 1 ELSE 0 END')
+            ->orderBy('match_date')->orderBy('match_number');
 
         if ($groupFilter) {
             $query->whereHas('group', fn($q) => $q->where('name', $groupFilter));

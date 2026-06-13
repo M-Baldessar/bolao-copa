@@ -17,6 +17,7 @@ class MatchController extends Controller
         $stageFilter = $request->query('stage');
 
         $query = GameMatch::with(['homeTeam', 'awayTeam', 'group'])
+            ->orderByRaw('CASE WHEN home_score IS NOT NULL THEN 1 ELSE 0 END')
             ->orderBy('match_date')
             ->orderBy('match_number');
 

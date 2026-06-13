@@ -12,6 +12,7 @@ class PredictionController extends Controller
             ->predictions()
             ->with(['match.homeTeam', 'match.awayTeam', 'match.group', 'bolaoGroup'])
             ->join('game_matches', 'predictions.match_id', '=', 'game_matches.id')
+            ->orderByRaw('CASE WHEN game_matches.home_score IS NOT NULL THEN 1 ELSE 0 END')
             ->orderBy('game_matches.match_date')
             ->orderBy('predictions.match_id')
             ->select('predictions.*')

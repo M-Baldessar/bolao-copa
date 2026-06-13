@@ -43,6 +43,9 @@
                         'wrong'          => ['color' => 'red',    'label' => 'Errado'],
                     ];
                     $s = $statusMap[$result] ?? $statusMap['pending'];
+                    $locked = $match->match_date && now()->gte($match->match_date->copy()->subMinutes(5));
+                    $finished = $match->home_score !== null;
+                    $inProgress = $locked && !$finished;
                 @endphp
 
                 <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 rounded-xl p-4 transition-all animate-in"
@@ -140,6 +143,16 @@
                             {{ $s['label'] }}
                         </span>
                     </div>
+
+                    {{-- Partida em andamento --}}
+                    @if($inProgress)
+                        <div class="mt-3 pt-3 border-t border-orange-100 dark:border-orange-500/10 text-xs text-orange-700 dark:text-orange-500/70 flex items-center gap-1.5">
+                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Partida em andamento
+                        </div>
+                    @endif
 
                     {{-- Nome do bolão (mobile) --}}
                     <div class="mt-2 sm:hidden">

@@ -328,7 +328,7 @@
                    class="px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition
                           {{ request()->routeIs('bolao.*') ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60' }}"
                    {{ request()->routeIs('bolao.*') ? 'aria-current=page' : '' }}>
-                    Bolão
+                    Bolões
                 </a>
             </div>
         </div>
