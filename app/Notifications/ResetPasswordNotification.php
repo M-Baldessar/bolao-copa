@@ -23,12 +23,10 @@ class ResetPasswordNotification extends Notification
 
         return (new MailMessage)
             ->subject('🔐 Redefinição de senha — Bolão Copa 2026')
-            ->greeting('Olá, ' . $notifiable->name . '!')
-            ->line('Recebemos uma solicitação para redefinir a senha da sua conta no **Bolão Copa 2026**.')
-            ->line('Clique no botão abaixo para criar uma nova senha. O link é válido por **60 minutos**.')
-            ->action('Redefinir minha senha', $url)
-            ->line('Se você não solicitou a redefinição de senha, pode ignorar este e-mail com segurança — sua senha não será alterada.')
-            ->salutation('Abraços, equipe Bolão Copa 2026 ⚽');
+            ->view('emails.reset-password', [
+                'url'  => $url,
+                'name' => $notifiable->name,
+            ]);
     }
 
     public function toArray(object $notifiable): array
