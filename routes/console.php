@@ -19,3 +19,10 @@ Schedule::command('matches:sync-standings')
     ->everyFifteenMinutes()
     ->withoutOverlapping()
     ->runInBackground();
+
+// Cria novas partidas do mata-mata assim que a API definir os times (a cada hora)
+// O comando é idempotente: ignora partidas que já existem no banco
+Schedule::command('matches:sync-schedule')
+    ->hourly()
+    ->withoutOverlapping()
+    ->runInBackground();
