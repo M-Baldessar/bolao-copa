@@ -310,3 +310,4 @@
     document.getElementById('section-groups').classList.add('hidden');
     </script>
 @endsection
+
