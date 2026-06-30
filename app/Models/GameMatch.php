@@ -30,12 +30,14 @@ class GameMatch extends Model
         'match_date',
         'home_score',
         'away_score',
+        'winner_team_id',
     ];
 
     protected $casts = [
-        'match_date' => 'datetime',
-        'home_score' => 'integer',
-        'away_score' => 'integer',
+        'match_date'     => 'datetime',
+        'home_score'     => 'integer',
+        'away_score'     => 'integer',
+        'winner_team_id' => 'integer',
     ];
 
     public function group(): BelongsTo
@@ -51,6 +53,11 @@ class GameMatch extends Model
     public function awayTeam(): BelongsTo
     {
         return $this->belongsTo(Team::class, 'away_team_id');
+    }
+
+    public function winner(): BelongsTo
+    {
+        return $this->belongsTo(Team::class, 'winner_team_id');
     }
 
     public function predictions(): HasMany

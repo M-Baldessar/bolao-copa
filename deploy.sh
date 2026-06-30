@@ -28,4 +28,7 @@ php artisan route:cache
 php artisan view:clear
 php artisan view:cache
 
+echo "--- Recarregando PHP-FPM (limpa OPcache) ---"
+sudo systemctl reload php8.2-fpm 2>/dev/null || sudo service php-fpm reload 2>/dev/null || true
+
 echo "--- Deploy concluído com sucesso ---"

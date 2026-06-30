@@ -49,8 +49,18 @@ class SyncMatchResults extends Command
         $notFound = 0;
 
         foreach ($apiMatches as $apiMatch) {
-            $homeScore = $apiMatch['score']['fullTime']['home'] ?? null;
-            $awayScore = $apiMatch['score']['fullTime']['away'] ?? null;
+            $duration = $apiMatch['score']['duration'] ?? 'REGULAR';
+
+            if ($duration === 'PENALTY_SHOOTOUT') {
+                // fullTime inclui pênaltis; o bolão usa apenas tempo normal + prorrogação
+                $homeScore = ($apiMatch['score']['regularTime']['home'] ?? 0)
+                           + ($apiMatch['score']['extraTime']['home']   ?? 0);
+                $awayScore = ($apiMatch['score']['regularTime']['away'] ?? 0)
+                           + ($apiMatch['score']['extraTime']['away']   ?? 0);
+            } else {
+                $homeScore = $apiMatch['score']['fullTime']['home'] ?? null;
+                $awayScore = $apiMatch['score']['fullTime']['away'] ?? null;
+            }
 
             // Ignora se placar não está disponível
             if ($homeScore === null || $awayScore === null) {
@@ -71,36 +81,62 @@ class SyncMatchResults extends Command
                 continue;
             }
 
-            // Busca a partida local que ainda não tem resultado
+            // Determina vencedor por pênaltis (para placar empatado)
+            $winnerTeamId = null;
+            if ($duration === 'PENALTY_SHOOTOUT') {
+                $apiWinner    = $apiMatch['score']['winner'] ?? null;
+                $winnerTeamId = match ($apiWinner) {
+                    'HOME_TEAM' => $homeTeam->id,
+                    'AWAY_TEAM' => $awayTeam->id,
+                    default     => null,
+                };
+            }
+
+            // Busca a partida local
             $match = GameMatch::where('home_team_id', $homeTeam->id)
                 ->where('away_team_id', $awayTeam->id)
-                ->whereNull('home_score')
                 ->first();
 
             if (! $match) {
-                // Partida já tem resultado ou não foi cadastrada
+                $notFound++;
+                continue;
+            }
+
+            // Monta apenas os campos que precisam ser atualizados
+            $updates = [];
+            if ($match->home_score === null) {
+                $updates['home_score'] = $homeScore;
+                $updates['away_score'] = $awayScore;
+            }
+            if ($winnerTeamId && $match->winner_team_id === null) {
+                $updates['winner_team_id'] = $winnerTeamId;
+            }
+
+            if (empty($updates)) {
                 $skipped++;
                 continue;
             }
 
             if ($this->option('dry-run')) {
-                $this->line("  [dry-run] {$homeTeam->name} {$homeScore} × {$awayScore} {$awayTeam->name}");
+                $label = isset($updates['home_score'])
+                    ? "{$homeTeam->name} {$homeScore} × {$awayScore} {$awayTeam->name}"
+                    : "{$homeTeam->name} vs {$awayTeam->name}";
+                $this->line("  [dry-run] {$label}" . ($winnerTeamId ? " (vencedor pênaltis)" : ''));
                 $updated++;
                 continue;
             }
 
-            $match->update([
-                'home_score' => $homeScore,
-                'away_score' => $awayScore,
-            ]);
+            $match->update($updates);
 
-            $this->info("  ✓ {$homeTeam->flag_emoji} {$homeTeam->name} {$homeScore} × {$awayScore} {$awayTeam->name} {$awayTeam->flag_emoji}");
+            $this->info("  ✓ {$homeTeam->flag_emoji} {$homeTeam->name} {$homeScore} × {$awayScore} {$awayTeam->name} {$awayTeam->flag_emoji}"
+                . ($winnerTeamId ? " (pênaltis)" : ''));
             Log::info('Match result synced', [
-                'match_id'   => $match->id,
-                'home'       => $homeTeam->name,
-                'away'       => $awayTeam->name,
-                'home_score' => $homeScore,
-                'away_score' => $awayScore,
+                'match_id'       => $match->id,
+                'home'           => $homeTeam->name,
+                'away'           => $awayTeam->name,
+                'home_score'     => $homeScore,
+                'away_score'     => $awayScore,
+                'winner_team_id' => $winnerTeamId,
             ]);
 
             $updated++;

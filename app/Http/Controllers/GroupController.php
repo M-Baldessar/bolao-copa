@@ -14,7 +14,7 @@ class GroupController extends Controller
         $groups = Group::with('teams')->orderBy('name')->get();
 
         $allKnockout = GameMatch::whereIn('stage', ['round_of_32', 'round_of_16', 'quarterfinal', 'semifinal', 'third_place', 'final'])
-            ->with(['homeTeam', 'awayTeam'])
+            ->with(['homeTeam', 'awayTeam', 'winner'])
             ->orderBy('match_number')
             ->get()
             ->groupBy('stage');
@@ -107,8 +107,8 @@ class GroupController extends Controller
     }
 
     /**
-     * Retorna o time vencedor de uma partida (real ou projetada).
-     * Slots projetados não têm placar, então retornam null — sem projeção em cascata além disso.
+     * Retorna o time vencedor de uma partida.
+     * Para jogos que foram a pênaltis (placar empatado), usa winner_team_id.
      */
     private function resolveWinner(mixed $match): mixed
     {
@@ -119,6 +119,7 @@ class GroupController extends Controller
         if ($match->home_score > $match->away_score) return $match->homeTeam;
         if ($match->away_score > $match->home_score) return $match->awayTeam;
 
-        return null;
+        // Empate no tempo normal + prorrogação: verificar vencedor nos pênaltis
+        return $match->winner ?? null;
     }
 }
