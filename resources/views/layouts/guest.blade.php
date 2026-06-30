@@ -312,6 +312,15 @@
     </footer>
 
     <script>
+        function togglePasswordVisibility(inputId, btn) {
+            var input = document.getElementById(inputId);
+            var isPassword = input.type === 'password';
+            input.type = isPassword ? 'text' : 'password';
+            btn.setAttribute('aria-label', isPassword ? 'Ocultar senha' : 'Mostrar senha');
+            btn.querySelector('.icon-eye').classList.toggle('hidden', isPassword);
+            btn.querySelector('.icon-eye-off').classList.toggle('hidden', !isPassword);
+        }
+
         function toggleTheme() {
             var html = document.documentElement;
             html.classList.add('theme-transitioning');
