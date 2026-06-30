@@ -19,16 +19,35 @@ class GroupController extends Controller
             ->get()
             ->groupBy('stage');
 
-        $r32Indexed = $allKnockout->get('round_of_32', collect())->keyBy('match_number');
-        $r16Real    = $allKnockout->get('round_of_16', collect());
-        $qfReal     = $allKnockout->get('quarterfinal', collect());
-        $sfReal     = $allKnockout->get('semifinal', collect());
+        $r32All  = $allKnockout->get('round_of_32', collect());
+        $r16Real = $allKnockout->get('round_of_16', collect());
+        $qfReal  = $allKnockout->get('quarterfinal', collect());
+        $sfReal  = $allKnockout->get('semifinal', collect());
 
-        // Ordem correta do chaveamento: cada par de R32 que se enfrenta em cada Oitavas
-        // Esq: Oitavas 1→#75,#78 · Oitavas 2→#73,#76 · Oitavas 3→#84,#83 · Oitavas 4→#82,#81
-        // Dir: Oitavas 5→#74,#77 · Oitavas 6→#79,#80 · Oitavas 7→#87,#86 · Oitavas 8→#85,#88
-        $r32Left  = collect([75, 78, 73, 76, 84, 83, 82, 81])->map(fn ($n) => $r32Indexed->get($n));
-        $r32Right = collect([74, 77, 79, 80, 87, 86, 85, 88])->map(fn ($n) => $r32Indexed->get($n));
+        // Busca por código dos times — imune à diferença de match_number entre ambientes
+        $f = fn (string $a, string $b) => $r32All->first(
+            fn ($m) => ($m->homeTeam->code === $a && $m->awayTeam->code === $b)
+                    || ($m->homeTeam->code === $b && $m->awayTeam->code === $a)
+        );
+
+        // Chaveamento correto (par de R32 que se enfrenta em cada Oitavas)
+        // Esq: Oitavas 1→GER×PAR / FRA×SWE · 2→RSA×CAN / NED×MAR
+        //      Oitavas 3→POR×CRO / ESP×AUT  · 4→USA×BIH / BEL×SEN
+        // Dir: Oitavas 5→BRA×JPN / CIV×NOR  · 6→MEX×ECU / ENG×COD
+        //      Oitavas 7→ARG×CPV / AUS×EGY  · 8→SUI×ALG / COL×GHA
+        $r32Left = collect([
+            $f('GER', 'PAR'), $f('FRA', 'SWE'),
+            $f('RSA', 'CAN'), $f('NED', 'MAR'),
+            $f('POR', 'CRO'), $f('ESP', 'AUT'),
+            $f('USA', 'BIH'), $f('BEL', 'SEN'),
+        ]);
+
+        $r32Right = collect([
+            $f('BRA', 'JPN'), $f('CIV', 'NOR'),
+            $f('MEX', 'ECU'), $f('ENG', 'COD'),
+            $f('ARG', 'CPV'), $f('AUS', 'EGY'),
+            $f('SUI', 'ALG'), $f('COL', 'GHA'),
+        ]);
 
         // Cada round é projetado a partir do anterior: usa partida real se existir,
         // senão monta slot sintético com o vencedor projetado do par anterior.
@@ -92,4 +111,3 @@ class GroupController extends Controller
         return null;
     }
 }
-
